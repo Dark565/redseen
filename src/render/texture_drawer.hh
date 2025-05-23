@@ -8,18 +8,20 @@
 namespace plane_quest::render {
 
 class TextureDrawer : public Drawer {
-public:
-    TextureDrawer(int width, int height, GLFWwindow* window);
+  public:
+    TextureDrawer(int width, int height, GLFWwindow *window);
     ~TextureDrawer() override;
 
     void clear(float r, float g, float b, float a = 1.0f) override;
-    void drawTexture(const Texture& tex, int x, int y, int w, int h); // Removed 'override'
+    void drawTexture(const Texture &tex, int x, int y, int w,
+                     int h); // Removed 'override'
     void present() override;
+    GLFWwindow *getWindowHandle() const;
 
-private:
+  private:
     int m_width;
     int m_height;
-    GLFWwindow* m_window;
+    GLFWwindow *m_window;
     GLuint m_fbo = 0;
     GLuint m_rbo = 0;
     GLuint m_screenQuadVao = 0;

@@ -81,6 +81,10 @@ void TextureDrawer::drawTexture(const Texture &tex, int x, int y, int w,
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TextureDrawer::present() { glfwSwapBuffers(m_window); }
+void TextureDrawer::present() {
+    glfwSwapBuffers(m_window); // Swap the front and back buffers
+}
+
+GLFWwindow *TextureDrawer::getWindowHandle() const { return m_window; }
 
 } // namespace plane_quest::render

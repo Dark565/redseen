@@ -22,7 +22,8 @@ class Window {
 
     void show();
     void hide();
-    render::Drawer &getDrawer(); // Updated to use render::Drawer
+    render::Drawer &getDrawer();         // Updated to use render::Drawer
+    GLFWwindow *getNativeHandle() const; // Declaration only
 };
 
 } // namespace plane_quest::ui

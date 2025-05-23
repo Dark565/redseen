@@ -1,17 +1,17 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 #include "render/drawer.hh"
 #include "window.hh"
 #include "window_config.hh"
-#include <GLFW/glfw3.h>
 
 namespace plane_quest {
 namespace ui {
 
 class WindowImpl {
   public:
-    std::unique_ptr<render::Drawer>
-        drawer; // Use TextureDrawer as the concrete implementatio
+    std::unique_ptr<render::Drawer> drawer;
     bool visible = false;
 
     WindowImpl(const WindowConfig &conf);
@@ -19,9 +19,10 @@ class WindowImpl {
     void show();
     void hide();
     render::Drawer &getDrawer();
+    GLFWwindow *getNativeHandle() const;
 
   private:
-    GLFWwindow *window = nullptr; // Add window member
+    GLFWwindow *window = nullptr;
 };
 
 } // namespace ui

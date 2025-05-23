@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include "render/drawer.hh"
+#include "render/texture_drawer.hh" // Include TextureDrawer for initialization
 #include "window_impl.hh"
 
 namespace plane_quest::ui {
@@ -27,12 +28,15 @@ WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
+    drawer = std::make_unique<render::TextureDrawer>(conf.width, conf.height,
+                                                     window);
 }
 
 WindowImpl::~WindowImpl() {
-    if (window)
+    if (window) {
         glfwDestroyWindow(window);
-    glfwTerminate();
+        window = nullptr;
+    }
 }
 
 void WindowImpl::show() {
@@ -49,6 +53,8 @@ render::Drawer &WindowImpl::getDrawer() {
     return *drawer;
 } // Corrected return type
 
+GLFWwindow *WindowImpl::getNativeHandle() const { return window; }
+
 void Window::show() { impl->show(); }
 
 void Window::hide() { impl->hide(); }
@@ -56,5 +62,7 @@ void Window::hide() { impl->hide(); }
 render::Drawer &Window::getDrawer() {
     return impl->getDrawer();
 } // Corrected return type
+
+GLFWwindow *Window::getNativeHandle() const { return impl->getNativeHandle(); }
 
 } // namespace plane_quest::ui

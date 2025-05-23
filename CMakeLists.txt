@@ -25,3 +25,5 @@ add_executable(planequest ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 
 target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/src")
 target_link_libraries(planequest PRIVATE glad glfw ${SQLITE3_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+add_definitions(-DGLFW_INCLUDE_NONE)
