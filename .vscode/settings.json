@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "clangd.enable": true,
+    "clangd.enableCodeCompletion": true,
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+    ],
+    "cmake.exportCompileCommandsFile": true
+}

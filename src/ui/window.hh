@@ -4,6 +4,7 @@
 
 #include "render/drawer.hh" // Use the real render module
 #include "window_config.hh"
+#include "window_impl.hh" // Include full definition of WindowImpl
 
 namespace plane_quest::ui {
 

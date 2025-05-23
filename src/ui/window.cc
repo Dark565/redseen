@@ -1,13 +1,16 @@
-#include "window.hh"
-#include "render/drawer.hh"
-#include "window_impl.hh"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
+#include "render/drawer.hh"
+#include "window_impl.hh"
+
 namespace plane_quest::ui {
 
-WindowImpl::WindowImpl(const WindowConfig &conf)
-    : window(nullptr) { // Initialize TextureDrawer with required arguments
+Window::Window(const WindowConfig &conf)
+    : impl(std::make_unique<WindowImpl>(conf)) {}
+
+WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!glfwInit()) {
         throw std::runtime_error("Failed to initialize GLFW");
     }
@@ -17,6 +20,12 @@ WindowImpl::WindowImpl(const WindowConfig &conf)
     if (!window) {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
+    }
+
+    glfwMakeContextCurrent(window); // Set OpenGL context
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        throw std::runtime_error("Failed to initialize GLAD");
     }
 }
 
@@ -39,6 +48,10 @@ void WindowImpl::hide() {
 render::Drawer &WindowImpl::getDrawer() {
     return *drawer;
 } // Corrected return type
+
+void Window::show() { impl->show(); }
+
+void Window::hide() { impl->hide(); }
 
 render::Drawer &Window::getDrawer() {
     return impl->getDrawer();

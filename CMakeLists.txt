@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 file(GLOB_RECURSE PROJECT_SOURCES  "${CMAKE_SOURCE_DIR}/src/**/*.cc")
-file(GLOB_RECURSE PROJECT_HEADERTS "${CMAKE_SOURCE_DIR}/src/**/*.hh")
+file(GLOB_RECURSE PROJECT_HEADERS "${CMAKE_SOURCE_DIR}/src/**/*.hh")
 
 set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/include")
 file(GLOB_RECURSE GLOB_INCLUDES "${CMAKE_SOURCE_DIR}/lib/include/**/*.h")
@@ -24,4 +24,4 @@ target_include_directories(glad PUBLIC "${GLAD_INCLUDE_DIR}")
 add_executable(planequest ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 
 target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/src")
-target_link_libraries(planequest glad ${GLFW3_LIBRARIES} ${SQLITE3_LIBRARIES} ${FREETYPE_LIBRARIES})
+target_link_libraries(planequest PRIVATE glad glfw ${SQLITE3_LIBRARIES} ${FREETYPE_LIBRARIES})
