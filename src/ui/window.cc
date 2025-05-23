@@ -1,17 +1,19 @@
-#include "ui/drawer_stub.hh" // Ensure DrawerStub is included
 #include "window.hh"
+#include "render/drawer.hh"
 #include "window_impl.hh"
-#include <stdexcept>
 #include <GLFW/glfw3.h>
+#include <stdexcept>
 
 namespace plane_quest::ui {
 
-WindowImpl::WindowImpl(const WindowConfig& conf)
-    : drawer(), window(nullptr) { // Initialize window
+WindowImpl::WindowImpl(const WindowConfig &conf)
+    : window(nullptr) { // Initialize TextureDrawer with required arguments
     if (!glfwInit()) {
         throw std::runtime_error("Failed to initialize GLFW");
     }
-    window = glfwCreateWindow(static_cast<int>(conf.width), static_cast<int>(conf.height), conf.name.data(), nullptr, nullptr);
+    window = glfwCreateWindow(static_cast<int>(conf.width),
+                              static_cast<int>(conf.height), conf.name.data(),
+                              nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
@@ -19,7 +21,8 @@ WindowImpl::WindowImpl(const WindowConfig& conf)
 }
 
 WindowImpl::~WindowImpl() {
-    if (window) glfwDestroyWindow(window);
+    if (window)
+        glfwDestroyWindow(window);
     glfwTerminate();
 }
 
@@ -33,8 +36,12 @@ void WindowImpl::hide() {
     glfwHideWindow(window);
 }
 
-render::Drawer& WindowImpl::getDrawer() { return drawer; } // Corrected return type
+render::Drawer &WindowImpl::getDrawer() {
+    return *drawer;
+} // Corrected return type
 
-render::Drawer& Window::getDrawer() { return impl->getDrawer(); } // Corrected return type
+render::Drawer &Window::getDrawer() {
+    return impl->getDrawer();
+} // Corrected return type
 
 } // namespace plane_quest::ui

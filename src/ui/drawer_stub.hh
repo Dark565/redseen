@@ -2,7 +2,7 @@
 
 namespace plane_quest::ui::render {
 class Drawer {
-public:
+  public:
     void clear() {}
     void present() {}
 };
