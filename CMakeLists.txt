@@ -12,6 +12,8 @@ file(GLOB_RECURSE PROJECT_HEADERTS "${CMAKE_SOURCE_DIR}/src/**/*.hh")
 
 find_package(glfw3 REQUIRED)
 find_package(SQLite3 REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(Freetype REQUIRED)
 
-add_executable(planequest ${PROJECT_SOURCES} ${PROJET_HEADERS} ${GLFW3_LIBRARIES} ${SQLITE3_LIBRARIES})
+add_executable(planequest ${PROJECT_SOURCES} ${PROJET_HEADERS} ${GLFW3_LIBRARIES} ${SQLITE3_LIBRARIES} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES})
 target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/src")
