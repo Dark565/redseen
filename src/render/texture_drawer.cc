@@ -65,20 +65,53 @@ void TextureDrawer::clear(float r, float g, float b, float a) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TextureDrawer::drawTexture(const Texture &tex, int x, int y, int w,
-                                int h) {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
+void TextureDrawer::drawTexture(GLuint texture, int x, int y, int width,
+                                int height) {
     // Bind the texture
-    glBindTexture(GL_TEXTURE_2D, tex.glTex);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
-    // Render the quad (stub: actual shader and transformation setup needed)
+    // Update the quad vertices with the given position and size
+    float quadVertices[] = {
+        // positions        // texCoords
+        static_cast<float>(x),
+        static_cast<float>(y + height),
+        0.0f,
+        1.0f, // top-left
+        static_cast<float>(x),
+        static_cast<float>(y),
+        0.0f,
+        0.0f, // bottom-left
+        static_cast<float>(x + width),
+        static_cast<float>(y),
+        1.0f,
+        0.0f, // bottom-right
+
+        static_cast<float>(x),
+        static_cast<float>(y + height),
+        0.0f,
+        1.0f, // top-left
+        static_cast<float>(x + width),
+        static_cast<float>(y),
+        1.0f,
+        0.0f, // bottom-right
+        static_cast<float>(x + width),
+        static_cast<float>(y + height),
+        1.0f,
+        1.0f // top-right
+    };
+
+    // Bind the VAO and update the VBO with the new vertices
     glBindVertexArray(m_screenQuadVao);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, m_screenQuadVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVertices), quadVertices);
 
+    // Draw the quad
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Unbind the VAO and texture
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void TextureDrawer::present() {

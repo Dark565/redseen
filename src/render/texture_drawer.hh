@@ -13,8 +13,8 @@ class TextureDrawer : public Drawer {
     ~TextureDrawer() override;
 
     void clear(float r, float g, float b, float a = 1.0f) override;
-    void drawTexture(const Texture &tex, int x, int y, int w,
-                     int h); // Removed 'override'
+    void drawTexture(GLuint texture, int x, int y, int width,
+                     int height) override;
     void present() override;
     GLFWwindow *getWindowHandle() const;
 

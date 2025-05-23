@@ -1,13 +1,17 @@
 #pragma once
 
+#include <glad/glad.h> // Include OpenGL types like GLuint
+
 namespace plane_quest::render {
 
 class Drawer {
-public:
+  public:
     virtual ~Drawer() = default;
 
     virtual void clear(float r, float g, float b, float a = 1.0f) = 0;
     virtual void present() = 0;
+    virtual void drawTexture(GLuint texture, int x, int y, int width,
+                             int height) = 0;
 };
 
 } // namespace plane_quest::render
