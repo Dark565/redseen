@@ -3,13 +3,20 @@
 #include <stdexcept>
 
 #include "render/drawer.hh"
-#include "render/texture_drawer.hh" // Include TextureDrawer for initialization
-#include "window_impl.hh"
+#include "render/texture_drawer.hh"
+
+#include "window_impl.hh" // Only in implementation
 
 namespace plane_quest::ui {
 
-Window::Window(const WindowConfig &conf)
-    : impl(std::make_unique<WindowImpl>(conf)) {}
+Window::Window(const WindowConfig &conf) : impl(new WindowImpl(conf)) {}
+
+Window::~Window() { delete impl; }
+
+void Window::show() { impl->show(); }
+void Window::hide() { impl->hide(); }
+render::Drawer &Window::getDrawer() { return impl->getDrawer(); }
+void *Window::getNativeHandle() const { return impl->getNativeHandle(); }
 
 WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!glfwInit()) {
@@ -28,8 +35,8 @@ WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
-    drawer = std::make_unique<render::TextureDrawer>(conf.width, conf.height,
-                                                     window);
+    drawer = std::make_optional<render::TextureDrawer>(conf.width, conf.height,
+                                                       window);
 }
 
 WindowImpl::~WindowImpl() {
@@ -53,16 +60,6 @@ render::Drawer &WindowImpl::getDrawer() {
     return *drawer;
 } // Corrected return type
 
-GLFWwindow *WindowImpl::getNativeHandle() const { return window; }
-
-void Window::show() { impl->show(); }
-
-void Window::hide() { impl->hide(); }
-
-render::Drawer &Window::getDrawer() {
-    return impl->getDrawer();
-} // Corrected return type
-
-GLFWwindow *Window::getNativeHandle() const { return impl->getNativeHandle(); }
+void *WindowImpl::getNativeHandle() const { return window; }
 
 } // namespace plane_quest::ui

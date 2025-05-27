@@ -1,29 +1,42 @@
 #pragma once
 
+#include <string>
+#include <cstdint>
 #include <memory>
 
-#include "render/drawer.hh" // Use the real render module
-#include "window_config.hh"
-#include "window_impl.hh" // Include full definition of WindowImpl
+struct GLFWwindow;
+
+namespace plane_quest::render {
+class Drawer;
+}
 
 namespace plane_quest::ui {
 
-class Window {
-    std::unique_ptr<class WindowImpl> impl;
+struct WindowConfig {
+    uint32_t width;
+    uint32_t height;
+    std::string name;
+};
 
+class WindowImpl; // Forward declaration
+
+class Window {
   public:
     Window(const WindowConfig &conf);
+    ~Window();
 
-    Window(const Window &) = delete;
-    Window &operator=(const Window &) = delete;
+    Window(const Window &) = delete;            // Disable copy constructor
+    Window &operator=(const Window &) = delete; // Disable copy assignment
 
-    Window(Window &&) noexcept = default;
-    Window &operator=(Window &&) noexcept = default;
-
+    Window(Window &&) = default;            // Enable move constructor
+    Window &operator=(Window &&) = default; // Enable move assignment
     void show();
     void hide();
-    render::Drawer &getDrawer();         // Updated to use render::Drawer
-    GLFWwindow *getNativeHandle() const; // Declaration only
+    render::Drawer &getDrawer();
+    void *getNativeHandle() const;
+
+  private:
+    WindowImpl *impl; // Raw pointer for PIMPL
 };
 
 } // namespace plane_quest::ui
