@@ -4,18 +4,16 @@
 #include <iostream>
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
-    std::cout << "Shader constructor called. Vertex path: " << vertexPath
-              << ", Fragment path: " << fragmentPath << std::endl;
-
-    std::cout << "Loading vertex shader from: " << vertexPath << std::endl;
-    std::cout << "Loading fragment shader from: " << fragmentPath << std::endl;
-
     std::string vertexCode = readFile(vertexPath);
     std::string fragmentCode = readFile(fragmentPath);
+    compileAndLink(vertexCode.c_str(), fragmentCode.c_str());
+}
 
-    const char *vShaderCode = vertexCode.c_str();
-    const char *fShaderCode = fragmentCode.c_str();
+Shader::Shader(const char *vertexSource, const char *fragmentSource, bool) {
+    compileAndLink(vertexSource, fragmentSource);
+}
 
+void Shader::compileAndLink(const char *vShaderCode, const char *fShaderCode) {
     GLuint vertex, fragment;
 
     vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -59,19 +57,15 @@ void Shader::checkCompileErrors(GLuint shader, const std::string &type) const {
 
     if (type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-        std::cout << "Shader compile log (" << type << "):\n"
-                  << infoLog << std::endl;
         if (!success) {
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
             std::cerr << "Error: Shader compilation failed (" << type << ")\n"
                       << infoLog << std::endl;
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
-        glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-        std::cout << "Shader link log (" << type << "):\n"
-                  << infoLog << std::endl;
         if (!success) {
+            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             std::cerr << "Error: Shader program linking failed\n"
                       << infoLog << std::endl;
         }

@@ -22,8 +22,6 @@ TextureDrawer::TextureDrawer(int width, int height, GLFWwindow *window)
         throw std::runtime_error("Framebuffer is not complete");
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     // Generate a VAO and VBO for rendering a screen quad
     glGenVertexArrays(1, &m_screenQuadVao);
     glGenBuffers(1, &m_screenQuadVbo);
@@ -49,6 +47,7 @@ TextureDrawer::TextureDrawer(int width, int height, GLFWwindow *window)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 TextureDrawer::~TextureDrawer() {
@@ -59,14 +58,17 @@ TextureDrawer::~TextureDrawer() {
 }
 
 void TextureDrawer::clear(float r, float g, float b, float a) {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    // Clear the default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void TextureDrawer::drawTexture(GLuint texture, int x, int y, int width,
                                 int height) {
+    // Ensure we're drawing to the default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     // Bind the texture
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -108,15 +110,13 @@ void TextureDrawer::drawTexture(GLuint texture, int x, int y, int width,
     // Draw the quad
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // Unbind the VAO and texture
+    // Unbind everything
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextureDrawer::present() {
-    glfwSwapBuffers(m_window); // Swap the front and back buffers
-}
+void TextureDrawer::present() { glfwSwapBuffers(m_window); }
 
 void *TextureDrawer::getWindowHandle() const { return m_window; }
 
