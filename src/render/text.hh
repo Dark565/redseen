@@ -15,7 +15,9 @@ class Text {
     ~Text();
 
     void renderText(const std::string &text, float x, float y, float scale,
-                    const glm::vec3 &color);
+                    const glm::vec3 &color,
+                    const glm::mat4 &model = glm::mat4(1.0f));
+    void setProjection(const glm::mat4 &proj);
 
   private:
     std::unique_ptr<TextImpl> impl; // Use unique_ptr for PIMPL

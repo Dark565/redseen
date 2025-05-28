@@ -57,17 +57,23 @@ void Shader::checkCompileErrors(GLuint shader, const std::string &type) const {
     GLint success;
     GLchar infoLog[1024];
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
+    if (type != "PROGRAM") {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-        std::cerr << "Error: Shader compilation failed (" << type << ")\n"
+        std::cout << "Shader compile log (" << type << "):\n"
                   << infoLog << std::endl;
-    }
-
-    glGetProgramiv(ID, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(ID, 1024, NULL, infoLog);
-        std::cerr << "Error: Shader program linking failed\n"
+        if (!success) {
+            std::cerr << "Error: Shader compilation failed (" << type << ")\n"
+                      << infoLog << std::endl;
+        }
+    } else {
+        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+        std::cout << "Shader link log (" << type << "):\n"
                   << infoLog << std::endl;
+        if (!success) {
+            std::cerr << "Error: Shader program linking failed\n"
+                      << infoLog << std::endl;
+        }
     }
 }

@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include "shader.hh"
 
 namespace plane_quest::render {
 
@@ -22,14 +23,17 @@ class TextImpl {
     ~TextImpl();
 
     void renderText(const std::string &text, float x, float y, float scale,
-                    const glm::vec3 &color);
+                    const glm::vec3 &color,
+                    const glm::mat4 &model = glm::mat4(1.0f));
+    void setProjection(const glm::mat4 &proj) { projection = proj; }
 
   private:
     std::map<char, Character> characters;
     unsigned int VAO, VBO;
     FT_Library ft;
     FT_Face face;
-
+    Shader *shader = nullptr;
+    glm::mat4 projection;
     void loadFont(const std::string &fontPath, unsigned int fontSize);
     void initRenderData();
 };
