@@ -1,8 +1,7 @@
 #include "ui/window.hh"
-#include "render/texture_drawer.hh" // Include TextureDrawer for casting
-#include "render/texture.hh" // Include Texture for loading the smiling face
-#include "render/shader.hh"  // Include Shader for modern OpenGL
-#include <GLFW/glfw3.h>      // Include GLFW for event handling
+#include "render/text.hh" // Add this include for text rendering
+#include "render/texture_drawer.hh"
+#include <GLFW/glfw3.h> // Include GLFW for event handling
 #include <iostream>
 #include <cmath>       // For trigonometric functions
 #include <glad/glad.h> // Include OpenGL types like GLuint
@@ -12,62 +11,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono> // For high_resolution_clock
 
-GLuint createSmilingFaceTexture() {
-    // Create a simple smiling face texture (corrected logic)
-    const int width = 256;
-    const int height = 256;
-    unsigned char data[width * height * 4] = {};
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int index = (y * width + x) * 4;
-            float dx = x - width / 2.0f;
-            float dy = y - height / 2.0f;
-            float distance = sqrt(dx * dx + dy * dy);
-
-            // Face (yellow circle)
-            if (distance < width / 2.0f) {
-                data[index] = 255;     // Red
-                data[index + 1] = 255; // Green
-                data[index + 2] = 0;   // Blue
-                data[index + 3] = 255; // Alpha
-
-                // Eyes (black circles)
-                if ((dx > -50 && dx < -30 && dy > 30 && dy < 50) ||
-                    (dx > 30 && dx < 50 && dy > 30 && dy < 50)) {
-                    data[index] = 0;
-                    data[index + 1] = 0;
-                    data[index + 2] = 0;
-                }
-
-                // Smile (black arc)
-                if (dy > -30 && dy < -20 &&
-                    dx * dx + (dy + 40) * (dy + 40) < 1600) {
-                    data[index] = 0;
-                    data[index + 1] = 0;
-                    data[index + 2] = 0;
-                }
-            } else {
-                data[index] = 0;
-                data[index + 1] = 0;
-                data[index + 2] = 0;
-                data[index + 3] = 0; // Transparent
-            }
-        }
-    }
-
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    return texture;
-}
-
 int main() {
     std::cout << "Program execution started." << std::endl;
 
@@ -75,7 +18,7 @@ int main() {
         plane_quest::ui::WindowConfig config;
         config.width = 800;
         config.height = 600;
-        config.name = "Smiling Face";
+        config.name = "Rotating Text Example";
 
         std::cout << "Creating window..." << std::endl;
         plane_quest::ui::Window window(config);
@@ -83,105 +26,112 @@ int main() {
         window.show();
         std::cout << "Window shown. Getting drawer..." << std::endl;
         auto &drawer = window.getDrawer();
-        std::cout << "Drawer obtained. Creating smiling face texture..."
-                  << std::endl;
-
-        // Create the smiling face texture
-        GLuint smilingFaceTexture = createSmilingFaceTexture();
-
-        // Set up VAO and VBO for rendering a quad
-        GLuint vao, vbo;
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-
-        float vertices[] = {// Positions   // Texture Coords
-                            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,  -1.0f, 1.0f, 0.0f,
-                            1.0f,  1.0f,  1.0f, 1.0f, -1.0f, 1.0f,  0.0f, 1.0f};
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,
-                     GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                              (void *)0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                              (void *)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-
-        // Load and compile shaders
-        std::cout << "Program started. Initializing shaders..." << std::endl;
-        char cwd[1024];
-        if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-            std::cout << "Current working directory: " << cwd << std::endl;
-        } else {
-            std::cerr << "Error: Unable to get current working directory."
-                      << std::endl;
+        auto *textureDrawer =
+            dynamic_cast<plane_quest::render::TextureDrawer *>(&drawer);
+        if (!textureDrawer) {
+            std::cerr << "Error: Drawer is not a TextureDrawer!" << std::endl;
+            return 1;
         }
-        Shader shader(
-            "/home/ubuntu/proj/planequest/src/render/vertex_shader.glsl",
-            "/home/ubuntu/proj/planequest/src/render/fragment_shader.glsl");
 
-        // Rendering loop
+        // Enable blending for text rendering
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        std::cout << "Blending enabled." << std::endl;
+
+        // Set up text rendering (use a system font path)
+        std::string fontPath =
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+        unsigned int fontSize = 48;
+        std::cout << "Loading font: " << fontPath << std::endl;
+        plane_quest::render::Text textRenderer(fontPath, fontSize);
+        std::cout << "Text renderer created." << std::endl;
+
+        // Check if font loaded successfully (Text class should expose a method or status)
+        // If not, print a warning (pseudo-code, adjust if Text exposes such a method)
+        // if (!textRenderer.isLoaded()) {
+        //     std::cerr << "Font failed to load!" << std::endl;
+        // }
+
+        // Set up orthographic projection to match window size for text
+        // rendering (TextImpl will use this projection) Provide a public method
+        // in Text to set the projection matrix
+        textRenderer.setProjection(
+            glm::ortho(0.0f, float(config.width), float(config.height), 0.0f));
+
+        // Animation state
         static auto lastTime = std::chrono::high_resolution_clock::now();
         static float angle = 0.0f;
-        const float fixedTimeStep = 1.0f / 30.0f; // Fixed time step for 30Hz
+        const float fixedTimeStep = 1.0f / 60.0f; // 60Hz
         float accumulator = 0.0f;
 
         while (!glfwWindowShouldClose(
             static_cast<GLFWwindow *>(window.getNativeHandle()))) {
-            // Clear the screen
-            drawer.clear(0.1f, 0.1f, 0.1f, 1.0f);
+            textureDrawer->clear(0.1f, 0.1f, 0.1f, 1.0f);
+            glBindFramebuffer(
+                GL_FRAMEBUFFER,
+                0); // Ensure default framebuffer is bound after clear
 
             // Calculate delta time
             auto currentTime = std::chrono::high_resolution_clock::now();
             float deltaTime =
                 std::chrono::duration<float>(currentTime - lastTime).count();
             lastTime = currentTime;
-
             accumulator += deltaTime;
 
-            // Update rotation at fixed intervals
+            // Update rotation
             while (accumulator >= fixedTimeStep) {
-                angle += 360.0f * fixedTimeStep; // Adjusted to 360 degrees per
-                                                 // second for 1Hz rotation
+                angle += 720.0f * fixedTimeStep; // 720 degrees per second (2Hz)
                 if (angle > 360.0f)
                     angle -= 360.0f;
                 accumulator -= fixedTimeStep;
             }
 
-            glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle),
-                                          glm::vec3(0.0f, 0.0f, 1.0f));
-            GLuint modelLoc = glGetUniformLocation(shader.ID, "model");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            // Compute text position (centered)
+            float x = config.width / 2.0f;
+            float y = config.height / 2.0f;
+            float scale = 1.0f;
+            glm::vec3 color(1.0f, 1.0f, 0.0f); // Yellow
 
-            // Render the smiling face texture
-            shader.use();
-            glBindTexture(GL_TEXTURE_2D, smilingFaceTexture);
-            glBindVertexArray(vao);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-            glBindVertexArray(0);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            // Center of rotation (text center)
+            float textWidth = 400.0f; // Approximate width for centering
+            float textHeight = 48.0f; // Font size
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(x, y, 0.0f));
+            model = glm::rotate(model, glm::radians(angle),
+                                glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::translate(
+                model, glm::vec3(-textWidth / 2.0f, -textHeight / 2.0f, 0.0f));
 
-            // Present the frame
-            drawer.present();
+            // DEBUG: Print angle and model matrix
+            std::cout << "angle: " << angle << std::endl;
+            std::cout << "model matrix: [" << model[0][0] << ", " << model[0][1]
+                      << ", " << model[0][2] << ", " << model[0][3] << "; "
+                      << model[1][0] << ", " << model[1][1] << ", "
+                      << model[1][2] << ", " << model[1][3] << "; "
+                      << model[2][0] << ", " << model[2][1] << ", "
+                      << model[2][2] << ", " << model[2][3] << "; "
+                      << model[3][0] << ", " << model[3][1] << ", "
+                      << model[3][2] << ", " << model[3][3] << "]" << std::endl;
 
-            // Poll for and process events
+            // DEBUG: Try rendering text at a fixed position with identity model matrix
+            textRenderer.renderText("Rotating Example Text", 100.0f, 100.0f, scale,
+                                    color, glm::mat4(1.0f));
+            GLenum err = glGetError();
+            if (err != GL_NO_ERROR) {
+                std::cerr << "OpenGL error after text rendering: " << err
+                          << std::endl;
+            } else {
+                std::cout << "No OpenGL error after text rendering."
+                          << std::endl;
+            }
+
+            textureDrawer->present();
             glfwPollEvents();
         }
-
-        glDeleteTextures(1, &smilingFaceTexture);
-        glDeleteVertexArrays(1, &vao);
-        glDeleteBuffers(1, &vbo);
         window.hide();
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
-
     return 0;
 }
