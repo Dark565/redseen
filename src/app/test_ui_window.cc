@@ -1,137 +1,112 @@
 #include "ui/window.hh"
-#include "render/text.hh" // Add this include for text rendering
+#include "render/text.hh"
 #include "render/texture_drawer.hh"
-#include <GLFW/glfw3.h> // Include GLFW for event handling
+#include <GLFW/glfw3.h>
 #include <iostream>
-#include <cmath>       // For trigonometric functions
-#include <glad/glad.h> // Include OpenGL types like GLuint
-#include <unistd.h>    // For getcwd
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <chrono> // For high_resolution_clock
+#include <unistd.h> // For access() and F_OK
+
+void checkGLError(const char *location) {
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL error at " << location << ": 0x" << std::hex
+                  << error << std::dec << std::endl;
+    }
+}
+
+// Helper function to check if a file exists and is readable
+bool checkFileExists(const std::string &path) {
+    if (access(path.c_str(), F_OK | R_OK) == -1) {
+        std::cerr << "File does not exist or is not readable: " << path
+                  << std::endl;
+        return false;
+    }
+    std::cout << "File exists and is readable: " << path << std::endl;
+    return true;
+}
 
 int main() {
-    std::cout << "Program execution started." << std::endl;
-
     try {
+        // Create window
         plane_quest::ui::WindowConfig config;
         config.width = 800;
         config.height = 600;
-        config.name = "Rotating Text Example";
+        config.name = "Simple Text Test";
 
         std::cout << "Creating window..." << std::endl;
         plane_quest::ui::Window window(config);
-        std::cout << "Window created. Showing window..." << std::endl;
         window.show();
-        std::cout << "Window shown. Getting drawer..." << std::endl;
+
+        // Get drawer
         auto &drawer = window.getDrawer();
         auto *textureDrawer =
             dynamic_cast<plane_quest::render::TextureDrawer *>(&drawer);
         if (!textureDrawer) {
-            std::cerr << "Error: Drawer is not a TextureDrawer!" << std::endl;
+            std::cerr << "Failed to get TextureDrawer" << std::endl;
             return 1;
         }
 
-        // Enable blending for text rendering
+        // Basic OpenGL setup
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        std::cout << "Blending enabled." << std::endl;
+        checkGLError("After blend setup");
 
-        // Set up text rendering (use a system font path)
+        // Create text renderer
+        std::cout << "Creating text renderer..." << std::endl;
         std::string fontPath =
             "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
-        unsigned int fontSize = 48;
-        std::cout << "Loading font: " << fontPath << std::endl;
-        plane_quest::render::Text textRenderer(fontPath, fontSize);
-        std::cout << "Text renderer created." << std::endl;
+        if (!checkFileExists(fontPath)) {
+            std::cerr << "Font file not found!" << std::endl;
+            return 1;
+        }
 
-        // Check if font loaded successfully (Text class should expose a method or status)
-        // If not, print a warning (pseudo-code, adjust if Text exposes such a method)
-        // if (!textRenderer.isLoaded()) {
-        //     std::cerr << "Font failed to load!" << std::endl;
-        // }
+        plane_quest::render::Text textRenderer(fontPath, 32);
+        std::cout << "Text renderer created" << std::endl;
 
-        // Set up orthographic projection to match window size for text
-        // rendering (TextImpl will use this projection) Provide a public method
-        // in Text to set the projection matrix
-        textRenderer.setProjection(
-            glm::ortho(0.0f, float(config.width), float(config.height), 0.0f));
+        // Setup simple orthographic projection (Y from bottom to top)
+        glm::mat4 projection =
+            glm::ortho(0.0f,                              // left
+                       static_cast<float>(config.width),  // right
+                       0.0f,                              // bottom
+                       static_cast<float>(config.height), // top
+                       -1.0f,                             // near
+                       1.0f                               // far
+            );
+        textRenderer.setProjection(projection);
+        std::cout << "Projection matrix set" << std::endl;
 
-        // Animation state
-        static auto lastTime = std::chrono::high_resolution_clock::now();
-        static float angle = 0.0f;
-        const float fixedTimeStep = 1.0f / 60.0f; // 60Hz
-        float accumulator = 0.0f;
-
+        // Main loop
         while (!glfwWindowShouldClose(
             static_cast<GLFWwindow *>(window.getNativeHandle()))) {
-            textureDrawer->clear(0.1f, 0.1f, 0.1f, 1.0f);
-            glBindFramebuffer(
-                GL_FRAMEBUFFER,
-                0); // Ensure default framebuffer is bound after clear
+            // Clear with a visible color to confirm rendering is happening
+            textureDrawer->clear(0.3f, 0.3f, 0.3f, 1.0f);
+            checkGLError("After clear");
 
-            // Calculate delta time
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            float deltaTime =
-                std::chrono::duration<float>(currentTime - lastTime).count();
-            lastTime = currentTime;
-            accumulator += deltaTime;
+            // Simple identity model matrix
+            glm::mat4 model(1.0f);
 
-            // Update rotation
-            while (accumulator >= fixedTimeStep) {
-                angle += 720.0f * fixedTimeStep; // 720 degrees per second (2Hz)
-                if (angle > 360.0f)
-                    angle -= 360.0f;
-                accumulator -= fixedTimeStep;
-            }
-
-            // Compute text position (centered)
-            float x = config.width / 2.0f;
-            float y = config.height / 2.0f;
+            // Position text near the center of the screen
+            const std::string text = "Test Text";
+            float textX = config.width / 4.0f;  // Quarter from the left
+            float textY = config.height / 2.0f; // Middle of the screen
             float scale = 1.0f;
-            glm::vec3 color(1.0f, 1.0f, 0.0f); // Yellow
+            glm::vec3 color(1.0f, 1.0f, 1.0f); // White
 
-            // Center of rotation (text center)
-            float textWidth = 400.0f; // Approximate width for centering
-            float textHeight = 48.0f; // Font size
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(x, y, 0.0f));
-            model = glm::rotate(model, glm::radians(angle),
-                                glm::vec3(0.0f, 0.0f, 1.0f));
-            model = glm::translate(
-                model, glm::vec3(-textWidth / 2.0f, -textHeight / 2.0f, 0.0f));
-
-            // DEBUG: Print angle and model matrix
-            std::cout << "angle: " << angle << std::endl;
-            std::cout << "model matrix: [" << model[0][0] << ", " << model[0][1]
-                      << ", " << model[0][2] << ", " << model[0][3] << "; "
-                      << model[1][0] << ", " << model[1][1] << ", "
-                      << model[1][2] << ", " << model[1][3] << "; "
-                      << model[2][0] << ", " << model[2][1] << ", "
-                      << model[2][2] << ", " << model[2][3] << "; "
-                      << model[3][0] << ", " << model[3][1] << ", "
-                      << model[3][2] << ", " << model[3][3] << "]" << std::endl;
-
-            // DEBUG: Try rendering text at a fixed position with identity model matrix
-            textRenderer.renderText("Rotating Example Text", 100.0f, 100.0f, scale,
-                                    color, glm::mat4(1.0f));
-            GLenum err = glGetError();
-            if (err != GL_NO_ERROR) {
-                std::cerr << "OpenGL error after text rendering: " << err
-                          << std::endl;
-            } else {
-                std::cout << "No OpenGL error after text rendering."
-                          << std::endl;
-            }
+            textRenderer.renderText(text, textX, textY, scale, color, model);
+            checkGLError("After renderText");
 
             textureDrawer->present();
+            checkGLError("After present");
+
             glfwPollEvents();
         }
+
         window.hide();
+        return 0;
     } catch (const std::exception &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Fatal error: " << e.what() << std::endl;
         return 1;
     }
-    return 0;
 }
