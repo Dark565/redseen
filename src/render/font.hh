@@ -1,12 +1,10 @@
 #ifndef FONT_HH
 #define FONT_HH
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
 #include <glm/glm.hpp>
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace plane_quest::render {
 
@@ -24,15 +22,11 @@ class Font {
 
     // Get character data for a specific character
     const Character &getCharacter(char c) const;
-    unsigned int getFontSize() const { return fontSize; }
+    unsigned int getFontSize() const;
 
   private:
-    void loadGlyphs();
-
-    FT_Library ft;
-    FT_Face face;
-    unsigned int fontSize;
-    std::map<char, Character> characters;
+    class FontImpl;
+    std::unique_ptr<FontImpl> impl;
 };
 
 } // namespace plane_quest::render
