@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "render/drawer.hh"
-#include "render/texture_drawer.hh"
+#include "render/opengl_drawer.hh"
 
 #include "window_impl.hh" // Only in implementation
 
@@ -36,8 +36,8 @@ WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
-    drawer = std::make_optional<render::TextureDrawer>(conf.width, conf.height,
-                                                       window);
+    drawer = std::make_optional<render::OpenGLDrawer>(conf.width, conf.height,
+                                                      window);
 }
 
 WindowImpl::~WindowImpl() {

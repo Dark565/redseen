@@ -1,9 +1,10 @@
-#include "texture_drawer.hh"
+#include "opengl_drawer.hh"
+#include "texture.hh"
 #include <stdexcept>
 
 namespace plane_quest::render {
 
-TextureDrawer::TextureDrawer(int width, int height, GLFWwindow *window)
+OpenGLDrawer::OpenGLDrawer(int width, int height, GLFWwindow *window)
     : m_width(width), m_height(height), m_window(window) {
     // Generate and bind a framebuffer object (FBO)
     glGenFramebuffers(1, &m_fbo);
@@ -50,27 +51,27 @@ TextureDrawer::TextureDrawer(int width, int height, GLFWwindow *window)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-TextureDrawer::~TextureDrawer() {
+OpenGLDrawer::~OpenGLDrawer() {
     glDeleteFramebuffers(1, &m_fbo);
     glDeleteRenderbuffers(1, &m_rbo);
     glDeleteVertexArrays(1, &m_screenQuadVao);
     glDeleteBuffers(1, &m_screenQuadVbo);
 }
 
-void TextureDrawer::clear(float r, float g, float b, float a) {
+void OpenGLDrawer::clear(float r, float g, float b, float a) {
     // Clear the default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void TextureDrawer::drawTexture(GLuint texture, int x, int y, int width,
-                                int height) {
+void OpenGLDrawer::drawTexture(const Texture &texture, int x, int y, int width,
+                               int height) {
     // Ensure we're drawing to the default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Bind the texture
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, texture.id());
 
     // Update the quad vertices with the given position and size
     float quadVertices[] = {
@@ -116,8 +117,49 @@ void TextureDrawer::drawTexture(GLuint texture, int x, int y, int width,
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextureDrawer::present() { glfwSwapBuffers(m_window); }
+void OpenGLDrawer::drawTexture(GLuint texture, int x, int y, int width,
+                               int height) {
+    // Ensure we're drawing to the default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
-void *TextureDrawer::getWindowHandle() const { return m_window; }
+    // Set up quad vertices and draw as in the other drawTexture method
+    float quadVertices[] = {static_cast<float>(x),
+                            static_cast<float>(y + height),
+                            0.0f,
+                            1.0f,
+                            static_cast<float>(x),
+                            static_cast<float>(y),
+                            0.0f,
+                            0.0f,
+                            static_cast<float>(x + width),
+                            static_cast<float>(y),
+                            1.0f,
+                            0.0f,
+                            static_cast<float>(x),
+                            static_cast<float>(y + height),
+                            0.0f,
+                            1.0f,
+                            static_cast<float>(x + width),
+                            static_cast<float>(y),
+                            1.0f,
+                            0.0f,
+                            static_cast<float>(x + width),
+                            static_cast<float>(y + height),
+                            1.0f,
+                            1.0f};
+
+    glBindVertexArray(m_screenQuadVao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_screenQuadVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVertices), quadVertices);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void OpenGLDrawer::present() { glfwSwapBuffers(m_window); }
+
+void *OpenGLDrawer::getWindowHandle() const { return m_window; }
 
 } // namespace plane_quest::render

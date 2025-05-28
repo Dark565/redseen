@@ -3,8 +3,7 @@
 #include <optional>
 #include <GLFW/glfw3.h>
 
-#include "render/texture_drawer.hh"
-#include "render/text.hh"
+#include "render/opengl_drawer.hh"
 #include "window.hh"
 
 namespace plane_quest::ui {
@@ -21,7 +20,7 @@ class WindowImpl {
 
   private:
     GLFWwindow *window = nullptr;
-    std::optional<render::TextureDrawer> drawer;
+    std::optional<render::OpenGLDrawer> drawer;
     bool visible;
 };
 

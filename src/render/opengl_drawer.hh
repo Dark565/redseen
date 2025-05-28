@@ -1,19 +1,22 @@
 #pragma once
 
 #include "drawer.hh"
+#include "texture.hh"
 #include <GLFW/glfw3.h>
-#include <glad/glad.h> // Replace GLEW with GLAD
+#include <glad/glad.h>
 
 namespace plane_quest::render {
 
-class TextureDrawer : public Drawer {
+class OpenGLDrawer : public Drawer {
   public:
-    TextureDrawer(int width, int height, GLFWwindow *window);
-    ~TextureDrawer() override;
+    OpenGLDrawer(int width, int height, GLFWwindow *window);
+    ~OpenGLDrawer() override;
 
     void clear(float r, float g, float b, float a = 1.0f) override;
-    void drawTexture(GLuint texture, int x, int y, int width,
-                     int height) override;
+    void drawTexture(const Texture &texture, int x, int y, int width,
+                     int height);
+    virtual void drawTexture(GLuint texture, int x, int y, int width,
+                             int height);
     void present() override;
     void *getWindowHandle() const;
 
