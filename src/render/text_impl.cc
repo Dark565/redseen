@@ -1,5 +1,6 @@
 #include "text_impl.hh"
 #include "shader.hh"
+#include "text_shaders.hh"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <glad/glad.h>
@@ -17,12 +18,10 @@ TextImpl::TextImpl(const std::string &fontPath, unsigned int fontSize) {
                   << std::endl;
         return;
     }
-    // Load dedicated text shader
-    shader = new Shader("src/render/text_vertex.glsl",
-                        "src/render/text_fragment.glsl");
-    // Set up projection (default, can be overridden)
-    projection = glm::ortho(0.0f, 800.0f, 600.0f,
-                            0.0f); // Default, can be set from outside
+    // Create shader from embedded code
+    shader = new Shader(TEXT_VERTEX_SHADER, TEXT_FRAGMENT_SHADER, true);
+    // Set up projection with Y starting from bottom (0) to top (height)
+    projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -1.0f, 1.0f);
     loadFont(fontPath, fontSize);
     initRenderData();
 }
@@ -89,36 +88,33 @@ void TextImpl::renderText(const std::string &text, float x, float y,
                           float scale, const glm::vec3 &color,
                           const glm::mat4 &model) {
     shader->use();
-    GLint projLoc = glGetUniformLocation(shader->ID, "projection");
-    GLint modelLoc = glGetUniformLocation(shader->ID, "model");
-    GLint colorLoc = glGetUniformLocation(shader->ID, "textColor");
-    GLint texLoc = glGetUniformLocation(shader->ID, "text");
-    std::cout << "Uniform locations: projection=" << projLoc
-              << ", model=" << modelLoc << ", textColor=" << colorLoc
-              << ", text=" << texLoc << std::endl;
-    glUniform3f(colorLoc, color.x, color.y, color.z);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1i(texLoc, 0); // Set sampler to texture unit 0
+    glUniform3f(glGetUniformLocation(shader->ID, "textColor"), color.x, color.y,
+                color.z);
+    glUniformMatrix4fv(glGetUniformLocation(shader->ID, "projection"), 1,
+                       GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(shader->ID, "model"), 1, GL_FALSE,
+                       glm::value_ptr(model));
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
-    glEnableVertexAttribArray(
-        0); // Ensure attribute 0 is enabled for vertex input
+
     for (const char &c : text) {
         Character ch = characters[c];
         float xpos = x + ch.bearing.x * scale;
-        float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+        float ypos = y + ch.bearing.y * scale;
         float w = ch.size.x * scale;
         float h = ch.size.y * scale;
+
         float vertices[6][4] = {
-            {xpos, ypos + h, 0.0f, 0.0f}, {xpos, ypos, 0.0f, 1.0f},
-            {xpos + w, ypos, 1.0f, 1.0f}, {xpos, ypos + h, 0.0f, 0.0f},
-            {xpos + w, ypos, 1.0f, 1.0f}, {xpos + w, ypos + h, 1.0f, 0.0f}};
+            {xpos, ypos - h, 0.0f, 1.0f}, {xpos + w, ypos - h, 1.0f, 1.0f},
+            {xpos, ypos, 0.0f, 0.0f},     {xpos + w, ypos - h, 1.0f, 1.0f},
+            {xpos + w, ypos, 1.0f, 0.0f}, {xpos, ypos, 0.0f, 0.0f}};
+
         glBindTexture(GL_TEXTURE_2D, ch.textureID);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
         x += (ch.advance >> 6) * scale;
     }
     glBindVertexArray(0);
