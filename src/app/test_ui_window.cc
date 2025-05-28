@@ -72,7 +72,7 @@ int main() {
     std::cout << "Program execution started." << std::endl;
 
     try {
-        WindowConfig config;
+        plane_quest::ui::WindowConfig config;
         config.width = 800;
         config.height = 600;
         config.name = "Smiling Face";
@@ -123,8 +123,8 @@ int main() {
                       << std::endl;
         }
         Shader shader(
-            "/home/ubuntu/proj/planequest/src/app/vertex_shader.glsl",
-            "/home/ubuntu/proj/planequest/src/app/fragment_shader.glsl");
+            "/home/ubuntu/proj/planequest/src/render/vertex_shader.glsl",
+            "/home/ubuntu/proj/planequest/src/render/fragment_shader.glsl");
 
         // Rendering loop
         static auto lastTime = std::chrono::high_resolution_clock::now();
@@ -132,7 +132,8 @@ int main() {
         const float fixedTimeStep = 1.0f / 30.0f; // Fixed time step for 30Hz
         float accumulator = 0.0f;
 
-        while (!glfwWindowShouldClose(window.getNativeHandle())) {
+        while (!glfwWindowShouldClose(
+            static_cast<GLFWwindow *>(window.getNativeHandle()))) {
             // Clear the screen
             drawer.clear(0.1f, 0.1f, 0.1f, 1.0f);
 
