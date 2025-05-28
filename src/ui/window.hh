@@ -36,7 +36,7 @@ class Window {
     void *getNativeHandle() const;
 
   private:
-    WindowImpl *impl; // Raw pointer for PIMPL
+    std::unique_ptr<WindowImpl> impl; // Use unique_ptr for PIMPL
 };
 
 } // namespace plane_quest::ui

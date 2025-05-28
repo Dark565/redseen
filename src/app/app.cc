@@ -16,9 +16,11 @@ class AppImpl {
     void run() {}
 };
 
-plane_quest::App::App(const std::string_view &name)
+App::App(const std::string_view &name)
     : impl(std::make_unique<AppImpl>(name)) {}
 
-void plane_quest::App::run() { impl->run(); }
+App::~App() = default;
+
+void App::run() { impl->run(); }
 
 }; // namespace plane_quest

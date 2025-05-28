@@ -5,11 +5,15 @@
 
 namespace plane_quest {
 
+class AppImpl; // Forward declaration
+
 class App {
-    std::unique_ptr<class AppImpl> impl;
+    std::unique_ptr<AppImpl> impl; // Use unique_ptr for PIMPL
 
   public:
     App(const std::string_view &name);
+    ~App();
+
     void run();
 };
 

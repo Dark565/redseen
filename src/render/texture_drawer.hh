@@ -16,7 +16,7 @@ class TextureDrawer : public Drawer {
     void drawTexture(GLuint texture, int x, int y, int width,
                      int height) override;
     void present() override;
-    GLFWwindow *getWindowHandle() const;
+    void *getWindowHandle() const;
 
   private:
     int m_width;

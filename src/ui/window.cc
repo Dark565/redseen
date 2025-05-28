@@ -9,9 +9,10 @@
 
 namespace plane_quest::ui {
 
-Window::Window(const WindowConfig &conf) : impl(new WindowImpl(conf)) {}
+Window::Window(const WindowConfig &conf)
+    : impl(std::make_unique<WindowImpl>(conf)) {}
 
-Window::~Window() { delete impl; }
+Window::~Window() = default;
 
 void Window::show() { impl->show(); }
 void Window::hide() { impl->hide(); }

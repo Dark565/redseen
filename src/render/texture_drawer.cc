@@ -118,6 +118,6 @@ void TextureDrawer::present() {
     glfwSwapBuffers(m_window); // Swap the front and back buffers
 }
 
-GLFWwindow *TextureDrawer::getWindowHandle() const { return m_window; }
+void *TextureDrawer::getWindowHandle() const { return m_window; }
 
 } // namespace plane_quest::render

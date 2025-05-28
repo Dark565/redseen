@@ -1,13 +1,14 @@
 #include "text.hh"
-#include "text_impl.hh" // Include the header file for TextImpl to resolve incomplete type issues
+#include "text_impl.hh"
 
 #include <string>
-#include <memory>
 
 namespace plane_quest::render {
 
 Text::Text(const std::string &fontPath, unsigned int fontSize)
     : impl(std::make_unique<TextImpl>(fontPath, fontSize)) {}
+
+Text::~Text() = default;
 
 void Text::renderText(const std::string &text, float x, float y, float scale,
                       const glm::vec3 &color) {

@@ -7,7 +7,7 @@
 
 namespace plane_quest::render {
 
-class TextImpl; // Forward declaration of the implementation class
+class TextImpl; // Forward declaration
 
 class Text {
   public:
@@ -18,7 +18,7 @@ class Text {
                     const glm::vec3 &color);
 
   private:
-    std::unique_ptr<TextImpl> impl; // Pointer to the implementation class
+    std::unique_ptr<TextImpl> impl; // Use unique_ptr for PIMPL
 };
 
 } // namespace plane_quest::render
