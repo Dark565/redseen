@@ -22,10 +22,7 @@ file(GLOB_RECURSE GLAD_SOURCE "${CMAKE_SOURCE_DIR}/lib/src/glad.c")
 add_library(glad STATIC ${GLAD_SOURCE} ${GLAD_INCLUDES})
 target_include_directories(glad PUBLIC "${GLAD_INCLUDE_DIR}")
 
-file(GLOB_RECURSE FREETYPE_SOURCES "${CMAKE_SOURCE_DIR}/src/render/text.cc")
-file(GLOB_RECURSE TEXT_IMPL_SOURCES "${CMAKE_SOURCE_DIR}/src/render/text_impl.cc")
-
-add_executable(planequest ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${FREETYPE_SOURCES} ${TEXT_IMPL_SOURCES})
+add_executable(planequest ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 
 target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/src")
 target_include_directories(planequest PRIVATE ${FREETYPE_INCLUDE_DIRS})
