@@ -1,7 +1,6 @@
 #pragma once
 
 #include "drawer.hh"
-#include "texture.hh"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h> // Replace GLEW with GLAD
 
