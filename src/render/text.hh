@@ -1,26 +1,35 @@
 #ifndef TEXT_HH
 #define TEXT_HH
 
-#include <string>
+#include "font.hh"
 #include <glm/glm.hpp>
 #include <memory>
+#include <string>
 
 namespace plane_quest::render {
 
-class TextImpl; // Forward declaration
+class TextRenderer;
 
 class Text {
   public:
-    Text(const std::string &fontPath, unsigned int fontSize);
+    // Constructor is private, Text objects are created through TextRenderer
     ~Text();
 
-    void renderText(const std::string &text, float x, float y, float scale,
-                    const glm::vec3 &color,
-                    const glm::mat4 &model = glm::mat4(1.0f));
-    void setProjection(const glm::mat4 &proj);
+    // Render the text at the specified position
+    void render(const std::string &text, float x, float y, float scale,
+                const glm::vec3 &color,
+                const glm::mat4 &model = glm::mat4(1.0f));
+
+    // Get the font used by this text object
+    const Font *getFont() const { return font.get(); }
 
   private:
-    std::unique_ptr<TextImpl> impl; // Use unique_ptr for PIMPL
+    Text(TextRenderer *renderer, const std::shared_ptr<Font> &font);
+
+    TextRenderer *renderer; // Non-owning pointer to the renderer
+    std::shared_ptr<Font> font;
+
+    friend class TextRenderer;
 };
 
 } // namespace plane_quest::render
