@@ -10,6 +10,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
+#include <GL/glu.h>
+#include <array>
+#include <mapbox/earcut.hpp>
 
 void checkGLError(const char *location) {
     GLenum error = glGetError();
@@ -110,77 +113,92 @@ int main() {
                 float ypos = ch.bearing.y * 1.0f;
                 float w = ch.size.x * 1.0f;
                 float h = ch.size.y * 1.0f;
+                float y_offset = ypos - h;
 
-                // Create textured mesh for front/back faces
-                plane_quest::render::TextMesh texturedMesh;
-                texturedMesh.vertices = {
-                    // Front face vertices (z = 0)
-                    {glm::vec3(xpos, ypos - h, 0.0f),
-                     glm::vec2(0.0f, 1.0f)}, // 0
-                    {glm::vec3(xpos + w, ypos - h, 0.0f),
-                     glm::vec2(1.0f, 1.0f)}, // 1
-                    {glm::vec3(xpos + w, ypos, 0.0f),
-                     glm::vec2(1.0f, 0.0f)},                              // 2
-                    {glm::vec3(xpos, ypos, 0.0f), glm::vec2(0.0f, 0.0f)}, // 3
-
-                    // Back face vertices (z = -depth)
-                    {glm::vec3(xpos, ypos - h, -depth),
-                     glm::vec2(0.0f, 1.0f)}, // 4
-                    {glm::vec3(xpos + w, ypos - h, -depth),
-                     glm::vec2(1.0f, 1.0f)}, // 5
-                    {glm::vec3(xpos + w, ypos, -depth),
-                     glm::vec2(1.0f, 0.0f)},                               // 6
-                    {glm::vec3(xpos, ypos, -depth), glm::vec2(0.0f, 0.0f)} // 7
-                };
-
-                // Indices for front and back faces
-                texturedMesh.indices = {// Front face
-                                        0, 1, 2, 0, 2, 3,
-
-                                        // Back face
-                                        4, 5, 6, 4, 6, 7};
-
-                // Create solid mesh for side faces
-                plane_quest::render::TextMesh solidMesh;
-                solidMesh.vertices = texturedMesh.vertices; // Reuse vertices
-
-                // Indices for side faces
-                solidMesh.indices = {// Left face
-                                     0, 4, 7, 0, 7, 3,
-
-                                     // Right face
-                                     1, 2, 6, 1, 6, 5,
-
-                                     // Top face
-                                     3, 2, 6, 3, 6, 7,
-
-                                     // Bottom face
-                                     0, 1, 5, 0, 5, 4};
-
-                // Individual glyph transformation
+                // --- EAR CUT TESSELLATION FOR FRONT/BACK FACES ---
+                using Coord = float;
+                using Point = std::array<Coord, 2>;
+                using Polygon = std::vector<std::vector<Point>>;
+                Polygon polygon;
+                int start = 0;
+                for (size_t cidx = 0; cidx < ch.contourEnds.size(); ++cidx) {
+                    int end = ch.contourEnds[cidx];
+                    std::vector<Point> pts;
+                    for (int i = start; i <= end; ++i)
+                        pts.push_back(Point{{ch.contourX[i] + xpos,
+                                             ch.contourY[i] + y_offset}});
+                    polygon.push_back(pts);
+                    start = end + 1;
+                }
+                // Triangulate front face
+                plane_quest::render::TextMesh frontMesh;
+                std::vector<glm::vec3> frontVerts;
+                for (const auto &ring : polygon)
+                    for (const auto &pt : ring)
+                        frontVerts.emplace_back(pt.at(0), pt.at(1), 0.0f);
+                auto frontIndices = mapbox::earcut<unsigned int>(polygon);
+                for (const auto &idx : frontIndices)
+                    frontMesh.indices.push_back(idx);
+                for (const auto &v : frontVerts)
+                    frontMesh.vertices.push_back({v, glm::vec2(0, 0)});
+                // Triangulate back face
+                plane_quest::render::TextMesh backMesh;
+                std::vector<glm::vec3> backVerts;
+                for (const auto &ring : polygon)
+                    for (const auto &pt : ring)
+                        backVerts.emplace_back(pt.at(0), pt.at(1), -depth);
+                auto backIndices = mapbox::earcut<unsigned int>(polygon);
+                for (const auto &idx : backIndices)
+                    backMesh.indices.push_back(idx);
+                for (const auto &v : backVerts)
+                    backMesh.vertices.push_back({v, glm::vec2(0, 0)});
                 glm::mat4 model = sharedTransform;
                 model = glm::scale(model, glm::vec3(scale));
                 model =
                     glm::translate(model, glm::vec3(pen_x / scale, 0.0f, 0.0f));
-
-                // Draw textured faces (front and back)
-                glm::vec3 frontColor(0.0f, 1.0f,
-                                     1.0f); // Bright cyan for front/back
-                meshRenderer.render(texturedMesh, projection, view * model,
-                                    frontColor, ch.textureID);
-
-                // Draw solid faces (sides)
-                glm::vec3 sideColor(0.0f, 0.6f, 0.6f); // Darker cyan for sides
-                meshRenderer.render(solidMesh, projection, view * model,
-                                    sideColor,
-                                    0); // Use texture ID 0 for solid color
-
-                // Advance pen_x
-                float advance = (ch.advance >> 6);
-                if (advance == 0.0f) {
-                    advance = ch.size.x > 0 ? ch.size.x : 16.0f;
+                glm::vec3 frontColor(0.0f, 1.0f, 1.0f);
+                meshRenderer.render(frontMesh, projection, view * model,
+                                    frontColor, 0);
+                meshRenderer.render(backMesh, projection, view * model,
+                                    frontColor, 0);
+                // --- CONTOUR-BASED SIDE MESH GENERATION (with offset) ---
+                plane_quest::render::TextMesh contourSideMesh;
+                start = 0;
+                for (size_t cidx = 0; cidx < ch.contourEnds.size(); ++cidx) {
+                    int end = ch.contourEnds[cidx];
+                    for (int i = start; i <= end; ++i) {
+                        int next = (i == end) ? start : i + 1;
+                        glm::vec3 v0(ch.contourX[i] + xpos,
+                                     ch.contourY[i] + y_offset, 0.0f);
+                        glm::vec3 v1(ch.contourX[next] + xpos,
+                                     ch.contourY[next] + y_offset, 0.0f);
+                        glm::vec3 v2(ch.contourX[next] + xpos,
+                                     ch.contourY[next] + y_offset, -depth);
+                        glm::vec3 v3(ch.contourX[i] + xpos,
+                                     ch.contourY[i] + y_offset, -depth);
+                        int base = contourSideMesh.vertices.size();
+                        contourSideMesh.vertices.push_back(
+                            {v0, glm::vec2(0, 0)});
+                        contourSideMesh.vertices.push_back(
+                            {v1, glm::vec2(0, 0)});
+                        contourSideMesh.vertices.push_back(
+                            {v2, glm::vec2(0, 0)});
+                        contourSideMesh.vertices.push_back(
+                            {v3, glm::vec2(0, 0)});
+                        contourSideMesh.indices.push_back(base + 0);
+                        contourSideMesh.indices.push_back(base + 1);
+                        contourSideMesh.indices.push_back(base + 2);
+                        contourSideMesh.indices.push_back(base + 2);
+                        contourSideMesh.indices.push_back(base + 3);
+                        contourSideMesh.indices.push_back(base + 0);
+                    }
+                    start = end + 1;
                 }
-                pen_x += advance * scale;
+                glm::vec3 sideColor(0.0f, 0.6f, 0.6f);
+                meshRenderer.render(contourSideMesh, projection, view * model,
+                                    sideColor, 0);
+
+                pen_x += (ch.advance >> 6) * scale;
             }
 
             textureDrawer->present();
