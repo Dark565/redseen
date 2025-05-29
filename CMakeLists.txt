@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(planequest)
 
@@ -26,6 +26,8 @@ add_executable(planequest ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 
 target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/src")
 target_include_directories(planequest PRIVATE ${FREETYPE_INCLUDE_DIRS})
+target_include_directories(planequest PRIVATE "${CMAKE_SOURCE_DIR}/third_party/earcut.hpp/include")
+target_precompile_headers(planequest PRIVATE "${CMAKE_SOURCE_DIR}/third_party/earcut.hpp/include/mapbox/earcut.hpp")
 target_link_libraries(planequest PRIVATE glad glfw ${SQLITE3_LIBRARIES} ${FREETYPE_LIBRARIES} ${GLM_LIBRARIES})
 
 add_definitions(-DGLFW_INCLUDE_NONE)
