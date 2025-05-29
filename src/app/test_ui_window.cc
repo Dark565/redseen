@@ -74,17 +74,19 @@ int main() {
             // Instead of drawing the whole mesh at once, draw each glyph quad
             // separately with its own texture
             std::string text = "Deep Text!";
-            float pen_x = 0.0f;
+            // Compute total width in pixels
+            float total_width = 0.0f;
+            for (size_t i = 0; i < text.size(); ++i) {
+                const plane_quest::render::Character &ch =
+                    font->getCharacter(text[i]);
+                total_width += (ch.advance >> 6) * 1.0f;
+            }
+            float pen_x = -total_width / 2.0f; // Center the text
             for (size_t i = 0; i < text.size(); ++i) {
                 char c = text[i];
                 const plane_quest::render::Character &ch =
                     font->getCharacter(c);
-                // Use the glyph's OpenGL texture ID directly
-                // plane_quest::render::Texture glyphTexture(
-                //     ch.textureID, ch.size.x, ch.size.y, false);
-
-                // Build a single-quad mesh for this glyph (remove pen_x from
-                // vertex positions)
+                // Build a single-quad mesh for this glyph (no pen_x in xpos)
                 plane_quest::render::TextMesh glyphMesh;
                 float xpos = ch.bearing.x * 1.0f;
                 float ypos = ch.bearing.y * 1.0f;
@@ -104,19 +106,14 @@ int main() {
                 // Animate rotation and scaling as before
                 float time = static_cast<float>(glfwGetTime());
                 glm::mat4 model = glm::mat4(1.0f);
-                // 1. Translate by pen_x (in pixel units)
+                // Translate by pen_x in world space
                 model = glm::translate(model, glm::vec3(pen_x, 0.0f, 0.0f));
-                // 2. Center the text (global offset, in pixel units)
-                model = glm::translate(model, glm::vec3(-100.0f, -20.0f, 0.0f));
-                // 3. Scale to world units
-                model = glm::scale(model, glm::vec3(0.02f, 0.02f, 0.02f));
-                // 4. Rotate
+                // Scale to world units (increase if text is too small)
+                model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+                // Rotate
                 model = glm::rotate(model, glm::radians(-20.0f),
                                     glm::vec3(1, 0, 0));
                 model = glm::rotate(model, time, glm::vec3(0, 0, 1));
-                // Offset each glyph in X by pen_x * scale
-                model = glm::translate(
-                    model, glm::vec3(-100.0f + pen_x * 0.02f, -20.0f, 0.0f));
 
                 // Draw front face for this glyph
                 meshRenderer.render(glyphMesh, projection, view * model,
@@ -131,7 +128,15 @@ int main() {
                 meshRenderer.render(glyphMesh, projection, view * backModel,
                                     glm::vec3(0.0f, 0.5f, 1.0f), ch.textureID);
 
-                pen_x += (ch.advance >> 6) * 1.0f;
+                // Advance pen_x by glyph advance (fallback for zero-advance
+                // glyphs)
+                float advance = (ch.advance >> 6) * 1.0f;
+                if (advance == 0.0f) {
+                    // Fallback: use a reasonable width for space or missing
+                    // advance
+                    advance = 16.0f; // fallback for 32px font, adjust as needed
+                }
+                pen_x += advance;
             }
 
             textureDrawer->present();
