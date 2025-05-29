@@ -14,6 +14,18 @@
 #include <array>
 #include <mapbox/earcut.hpp>
 
+// Helper to compute signed area of a contour
+float signedArea(const std::vector<std::array<float, 2>> &contour) {
+    float area = 0.0f;
+    size_t n = contour.size();
+    for (size_t i = 0; i < n; ++i) {
+        const auto &p0 = contour[i];
+        const auto &p1 = contour[(i + 1) % n];
+        area += (p0[0] * p1[1]) - (p1[0] * p0[1]);
+    }
+    return area * 0.5f;
+}
+
 void checkGLError(const char *location) {
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
@@ -127,31 +139,37 @@ int main() {
                     for (int i = start; i <= end; ++i)
                         pts.push_back(Point{{ch.contourX[i] + xpos,
                                              ch.contourY[i] + y_offset}});
+                    float area = signedArea(pts);
+                    // Heuristic: first contour is outer, rest are holes
+                    if (cidx == 0) {
+                        if (area < 0)
+                            std::reverse(pts.begin(), pts.end());
+                    } else {
+                        if (area > 0)
+                            std::reverse(pts.begin(), pts.end());
+                    }
                     polygon.push_back(pts);
                     start = end + 1;
                 }
+                // Flatten polygon for mesh vertices
+                std::vector<Point> flatVerts;
+                for (const auto &ring : polygon)
+                    for (const auto &pt : ring)
+                        flatVerts.push_back(pt);
                 // Triangulate front face
                 plane_quest::render::TextMesh frontMesh;
-                std::vector<glm::vec3> frontVerts;
-                for (const auto &ring : polygon)
-                    for (const auto &pt : ring)
-                        frontVerts.emplace_back(pt.at(0), pt.at(1), 0.0f);
+                for (const auto &pt : flatVerts)
+                    frontMesh.vertices.push_back(
+                        {glm::vec3(pt[0], pt[1], 0.0f), glm::vec2(0, 0)});
                 auto frontIndices = mapbox::earcut<unsigned int>(polygon);
-                for (const auto &idx : frontIndices)
-                    frontMesh.indices.push_back(idx);
-                for (const auto &v : frontVerts)
-                    frontMesh.vertices.push_back({v, glm::vec2(0, 0)});
+                frontMesh.indices = frontIndices;
                 // Triangulate back face
                 plane_quest::render::TextMesh backMesh;
-                std::vector<glm::vec3> backVerts;
-                for (const auto &ring : polygon)
-                    for (const auto &pt : ring)
-                        backVerts.emplace_back(pt.at(0), pt.at(1), -depth);
+                for (const auto &pt : flatVerts)
+                    backMesh.vertices.push_back(
+                        {glm::vec3(pt[0], pt[1], -depth), glm::vec2(0, 0)});
                 auto backIndices = mapbox::earcut<unsigned int>(polygon);
-                for (const auto &idx : backIndices)
-                    backMesh.indices.push_back(idx);
-                for (const auto &v : backVerts)
-                    backMesh.vertices.push_back({v, glm::vec2(0, 0)});
+                backMesh.indices = backIndices;
                 glm::mat4 model = sharedTransform;
                 model = glm::scale(model, glm::vec3(scale));
                 model =
