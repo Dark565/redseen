@@ -163,21 +163,34 @@ int main() {
                         {glm::vec3(pt[0], pt[1], 0.0f), glm::vec2(0, 0)});
                 auto frontIndices = mapbox::earcut<unsigned int>(polygon);
                 frontMesh.indices = frontIndices;
-                // Triangulate back face
+                // Triangulate back face (reverse winding per triangle)
                 plane_quest::render::TextMesh backMesh;
                 for (const auto &pt : flatVerts)
                     backMesh.vertices.push_back(
                         {glm::vec3(pt[0], pt[1], -depth), glm::vec2(0, 0)});
-                auto backIndices = mapbox::earcut<unsigned int>(polygon);
-                backMesh.indices = backIndices;
+                // Reverse each triangle's winding for the back face
+                for (size_t i = 0; i + 2 < frontIndices.size(); i += 3) {
+                    backMesh.indices.push_back(frontIndices[i + 2]);
+                    backMesh.indices.push_back(frontIndices[i + 1]);
+                    backMesh.indices.push_back(frontIndices[i]);
+                }
+                glm::vec3 backColor(1.0f, 0.0f, 1.0f); // Magenta
+                // To debug: enable face culling and set glCullFace(GL_FRONT) to
+                // see only back faces glEnable(GL_CULL_FACE);
+                // glCullFace(GL_FRONT);
                 glm::mat4 model = sharedTransform;
                 model = glm::scale(model, glm::vec3(scale));
                 model =
                     glm::translate(model, glm::vec3(pen_x / scale, 0.0f, 0.0f));
                 glm::vec3 frontColor(0.0f, 1.0f, 1.0f);
+                // Render front face at z=0
                 meshRenderer.render(frontMesh, projection, view * model,
                                     frontColor, 0);
-                meshRenderer.render(backMesh, projection, view * model,
+                // Render back face by translating in -Z, using the same color
+                // as front
+                glm::mat4 backModel =
+                    glm::translate(model, glm::vec3(0.0f, 0.0f, -depth));
+                meshRenderer.render(frontMesh, projection, view * backModel,
                                     frontColor, 0);
                 // --- CONTOUR-BASED SIDE MESH GENERATION (with offset) ---
                 plane_quest::render::TextMesh contourSideMesh;
