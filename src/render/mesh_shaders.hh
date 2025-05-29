@@ -28,8 +28,14 @@ uniform vec3 meshColor;
 uniform sampler2D meshTexture;
 
 void main() {
-    float alpha = texture(meshTexture, TexCoord).r;
-    FragColor = vec4(meshColor, alpha);
+    if (textureSize(meshTexture, 0).x > 1) {
+        // For textured faces (front/back)
+        float alpha = texture(meshTexture, TexCoord).r;
+        FragColor = vec4(meshColor, alpha);
+    } else {
+        // For solid faces (sides)
+        FragColor = vec4(meshColor, 1.0);
+    }
 }
 )";
 

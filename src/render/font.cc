@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_OUTLINE_H
 #include "font.hh"
 #include <iostream>
 #include <stdexcept>
@@ -42,6 +43,8 @@ class Font::FontImpl {
 
     unsigned int getFontSize() const { return fontSize; }
 
+    void *getFTFace() const { return face; }
+
   private:
     void loadGlyphs() {
         glPixelStorei(GL_UNPACK_ALIGNMENT,
@@ -49,8 +52,44 @@ class Font::FontImpl {
 
         // Load first 128 ASCII characters
         for (unsigned char c = 0; c < 128; c++) {
+            // First load the glyph outline
+            if (FT_Load_Char(face, c, FT_LOAD_NO_BITMAP)) {
+                std::cerr << "Failed to load Glyph outline: " << c << std::endl;
+                continue;
+            }
+
+            // Get outline data
+            FT_GlyphSlot slot = face->glyph;
+            FT_Outline &outline = slot->outline;
+
+            // Store outline data
+            Character character;
+            character.size =
+                glm::ivec2(slot->metrics.width >> 6, slot->metrics.height >> 6);
+            character.bearing = glm::ivec2(slot->metrics.horiBearingX >> 6,
+                                           slot->metrics.horiBearingY >> 6);
+            character.advance = slot->advance.x;
+
+            // Copy outline points and tags
+            character.contourX.resize(outline.n_points);
+            character.contourY.resize(outline.n_points);
+            character.contourTags.resize(outline.n_points);
+            for (int i = 0; i < outline.n_points; i++) {
+                character.contourX[i] = outline.points[i].x /
+                                        64.0f; // Convert from 26.6 fixed point
+                character.contourY[i] = outline.points[i].y / 64.0f;
+                character.contourTags[i] = outline.tags[i];
+            }
+
+            // Copy contour end points
+            character.contourEnds.resize(outline.n_contours);
+            for (int i = 0; i < outline.n_contours; i++) {
+                character.contourEnds[i] = outline.contours[i];
+            }
+
+            // Now load the bitmap for texture
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-                std::cerr << "Failed to load Glyph: " << c << std::endl;
+                std::cerr << "Failed to load Glyph bitmap: " << c << std::endl;
                 continue;
             }
 
@@ -68,12 +107,7 @@ class Font::FontImpl {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            // Store character
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                static_cast<unsigned int>(face->glyph->advance.x)};
+            character.textureID = texture;
             characters.insert(std::pair<char, Character>(c, character));
         }
 
@@ -96,5 +130,7 @@ const Character &Font::getCharacter(char c) const {
 }
 
 unsigned int Font::getFontSize() const { return impl->getFontSize(); }
+
+void *Font::getFTFace() const { return impl->getFTFace(); }
 
 } // namespace plane_quest::render
