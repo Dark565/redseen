@@ -1,7 +1,7 @@
 #include "ui/window.hh"
 #include "render/text_renderer.hh"
 #include "render/text.hh"
-#include "render/texture_drawer.hh"
+#include "render/opengl_drawer.hh"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <glad/glad.h>
@@ -31,9 +31,9 @@ int main() {
         // Get drawer
         auto &drawer = window.getDrawer();
         auto *textureDrawer =
-            dynamic_cast<plane_quest::render::TextureDrawer *>(&drawer);
+            dynamic_cast<plane_quest::render::OpenGLDrawer *>(&drawer);
         if (!textureDrawer) {
-            std::cerr << "Failed to get TextureDrawer" << std::endl;
+            std::cerr << "Failed to get OpenGLDrawer" << std::endl;
             return 1;
         }
 
