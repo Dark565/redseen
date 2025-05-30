@@ -34,6 +34,47 @@ void checkGLError(const char *location) {
     }
 }
 
+// --- FPS Camera Controls ---
+struct Camera {
+    glm::vec3 position = glm::vec3(20.0f, 15.0f, 25.0f);
+    float yaw = -135.0f;  // degrees
+    float pitch = -30.0f; // degrees
+    float speed = 25.0f;
+    glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+};
+Camera camera;
+bool keys[1024] = {0};
+bool mouseCaptured = false;
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action,
+                  int mods) {
+    if (key >= 0 && key < 1024) {
+        if (action == GLFW_PRESS)
+            keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            keys[key] = false;
+    }
+}
+
+void processInput(float deltaTime) {
+    // Only allow movement in the XZ plane and up/down
+    glm::vec3 right = glm::normalize(glm::cross(camera.front, camera.up));
+    float velocity = camera.speed * deltaTime;
+    if (keys[GLFW_KEY_W])
+        camera.position += camera.front * velocity;
+    if (keys[GLFW_KEY_S])
+        camera.position -= camera.front * velocity;
+    if (keys[GLFW_KEY_A])
+        camera.position -= right * velocity;
+    if (keys[GLFW_KEY_D])
+        camera.position += right * velocity;
+    if (keys[GLFW_KEY_SPACE])
+        camera.position += camera.up * velocity;
+    if (keys[GLFW_KEY_LEFT_SHIFT])
+        camera.position -= camera.up * velocity;
+}
+
 int main() {
     try {
         // Create window
@@ -85,28 +126,27 @@ int main() {
             glm::radians(60.0f),
             static_cast<float>(config.width) / config.height, 0.1f, 100.0f);
 
-        // Position camera at a more dramatic angle
-        glm::mat4 view = glm::lookAt(glm::vec3(20.0f, 15.0f, 25.0f),
-                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(0.0f, 1.0f, 0.0f));
-
         // Main loop
-        while (!glfwWindowShouldClose(
-            static_cast<GLFWwindow *>(window.getNativeHandle()))) {
+        GLFWwindow *glfwWin =
+            static_cast<GLFWwindow *>(window.getNativeHandle());
+        glfwSetKeyCallback(glfwWin, key_callback);
+        double lastTime = glfwGetTime();
+        while (!glfwWindowShouldClose(glfwWin)) {
+            double now = glfwGetTime();
+            float deltaTime = float(now - lastTime);
+            lastTime = now;
+            processInput(deltaTime);
             textureDrawer->clear(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            float time = static_cast<float>(glfwGetTime());
+            float time = static_cast<float>(now);
             float scale = 0.15f;
             float depth = 5.0f;
-
             // Create the shared rotation transformation
             glm::mat4 sharedTransform = glm::mat4(1.0f);
             sharedTransform = glm::rotate(sharedTransform, glm::radians(-30.0f),
                                           glm::vec3(1, 0, 0));
             sharedTransform = glm::rotate(sharedTransform, time * 0.8f,
                                           glm::vec3(0, 1, 0.3f));
-
             // Compute total width for centering
             float total_width = 0.0f;
             std::string text = "Deep Text!";
@@ -116,6 +156,9 @@ int main() {
                 total_width += (ch.advance >> 6);
             }
             float pen_x = -(total_width * scale) / 2.0f;
+            // --- FPS CAMERA VIEW ---
+            glm::vec3 camTarget = camera.position + camera.front;
+            glm::mat4 view = glm::lookAt(camera.position, camTarget, camera.up);
 
             for (size_t i = 0; i < text.size(); ++i) {
                 char c = text[i];
