@@ -9,6 +9,7 @@
 #include "engine/geometry.hh"
 
 namespace plane_quest::engine {
+
 class BasicObject : public Object {
     glm::mat4 transform;
     std::shared_ptr<const render::Model> model;
@@ -29,7 +30,6 @@ class BasicObject : public Object {
     Position3f get_pos() const override;
     void set_pos(const Position3f &pos) override;
     bool render(const std::shared_ptr<Engine> &) override;
-    void on_event(const Event &) override;
 };
 
 } // namespace plane_quest::engine

@@ -4,13 +4,12 @@
 #include <string_view>
 
 #include "engine/geometry.hh"
-#include "engine/event_observer.hh"
 
 namespace plane_quest::engine {
 
 class Engine;
 
-class Object : public EventObserver {
+class Object {
   protected:
     Object() = default;
 

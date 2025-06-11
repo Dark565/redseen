@@ -12,8 +12,8 @@ class Editor;
 
 Engine::Engine() : object_manager(*this) {}
 
-std::unique_ptr<Editor> Engine::new_editor() {
-    return std::make_unique<Editor>(shared_from_this());
+std::shared_ptr<Editor> Engine::new_editor() {
+    return std::make_shared<Editor>(shared_from_this());
 }
 
 TextureManager &Engine::get_texture_manager() { return texture_manager; }

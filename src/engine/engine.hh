@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <memory>
 
 #include "common/noncopyable.hh"
@@ -9,12 +10,13 @@
 
 namespace plane_quest::engine {
 
+class EventObserver;
 class Editor;
-
 class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
     TextureManager texture_manager;
     ObjectManager object_manager;
     render::MeshRenderer global_mesh_renderer;
+    std::vector<std::weak_ptr<EventObserver>> event_observers;
 
     Engine();
 
