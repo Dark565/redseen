@@ -1,34 +1,33 @@
+#include "engine.hh"
+
+#include <glm/gtc/quaternion.hpp>
+#include <glm/matrix.hpp>
 #include <memory>
 
-#include "engine.hh"
 #include "editor.hh"
-#include "texture_manager.hh"
 
 namespace plane_quest::engine {
 
 class Editor;
 
-class EngineImpl {
-    TextureManager texture_manager;
-
-  public:
-    EngineImpl() {}
-
-    std::unique_ptr<Editor> create_editor(std::shared_ptr<Engine> engine) {
-        return std::make_unique<Editor>(std::move(engine));
-    }
-
-    TextureManager &get_texture_manager() { return texture_manager; }
-
-    const TextureManager &get_texture_manager() const {
-        return texture_manager;
-    }
-};
-
-Engine::Engine() : impl(std::make_unique<EngineImpl>()) {}
+Engine::Engine() : object_manager(*this) {}
 
 std::unique_ptr<Editor> Engine::new_editor() {
-    return impl->create_editor(shared_from_this());
+    return std::make_unique<Editor>(shared_from_this());
+}
+
+TextureManager &Engine::get_texture_manager() { return texture_manager; }
+
+const TextureManager &Engine::get_texture_manager() const {
+    return texture_manager;
+}
+
+render::MeshRenderer &Engine::get_global_mesh_renderer() {
+    return global_mesh_renderer;
+}
+
+const render::MeshRenderer &Engine::get_global_mesh_renderer() const {
+    return global_mesh_renderer;
 }
 
 } // namespace plane_quest::engine

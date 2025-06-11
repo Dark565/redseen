@@ -1,8 +1,7 @@
 #pragma once
-
-#include "event.hh"
-
 namespace plane_quest::engine {
+
+struct Event;
 
 class EventObserver {
   public:

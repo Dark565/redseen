@@ -1,13 +1,14 @@
 #pragma once
 
-#include <stdexcept>
-#include <string_view>
 #include <unordered_map>
 
 #include "texture_key.hh"
-#include "render/texture.hh"
 
+namespace plane_quest::render {
+class Texture;
+}
 namespace plane_quest::engine {
+
 class TextureManager {
     using SharedTexture = std::shared_ptr<const render::Texture>;
     std::unordered_map<TextureKey, SharedTexture> texture_map;

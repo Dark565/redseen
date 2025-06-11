@@ -3,15 +3,18 @@
 #include <memory>
 
 #include "common/noncopyable.hh"
-#include "editor.hh"
+#include "render/mesh_renderer.hh"
 #include "texture_manager.hh"
+#include "object_manager.hh"
 
 namespace plane_quest::engine {
 
 class Editor;
 
 class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
-    std::unique_ptr<class EngineImpl> impl;
+    TextureManager texture_manager;
+    ObjectManager object_manager;
+    render::MeshRenderer global_mesh_renderer;
 
     Engine();
 
@@ -21,6 +24,12 @@ class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
     std::unique_ptr<Editor> new_editor();
     TextureManager &get_texture_manager();
     const TextureManager &get_texture_manager() const;
+
+    ObjectManager &get_object_manager();
+    const ObjectManager &get_object_manager() const;
+
+    render::MeshRenderer &get_global_mesh_renderer();
+    const render::MeshRenderer &get_global_mesh_renderer() const;
 };
 
 } // namespace plane_quest::engine

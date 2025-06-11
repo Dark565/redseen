@@ -1,7 +1,5 @@
-#include <memory>
-
-#include "texture_key.hh"
 #include "texture_manager.hh"
+#include "texture_key.hh"
 
 namespace plane_quest::engine {
 
