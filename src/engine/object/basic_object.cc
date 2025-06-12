@@ -5,6 +5,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/matrix.hpp>
 #include <memory>
+#include "engine/engine.hh"
 #include "engine/geometry.hh"
 #include "render/model.hh"
 

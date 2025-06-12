@@ -3,6 +3,7 @@
 #include <concepts>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <unordered_map>
 
@@ -15,7 +16,7 @@ class Object;
 class ObjectManager {
     using SharedObjectPtr = std::shared_ptr<Object>;
 
-    std::unordered_map<std::string_view, SharedObjectPtr> obj_map;
+    std::unordered_map<std::string, SharedObjectPtr> obj_map;
     Engine &engine;
 
   public:

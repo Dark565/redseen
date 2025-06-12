@@ -5,7 +5,6 @@
 
 #include "object/object.hh"
 #include "event_observer.hh"
-#include "engine.hh"
 
 namespace plane_quest::engine {
 

@@ -1,14 +1,12 @@
 #include "engine.hh"
 
-#include <glm/gtc/quaternion.hpp>
-#include <glm/matrix.hpp>
 #include <memory>
 
 #include "editor.hh"
 
 namespace plane_quest::engine {
 
-class Editor;
+class EventLoop;
 
 Engine::Engine() : object_manager(*this) {}
 
@@ -20,6 +18,14 @@ TextureManager &Engine::get_texture_manager() { return texture_manager; }
 
 const TextureManager &Engine::get_texture_manager() const {
     return texture_manager;
+}
+
+const std::shared_ptr<EventLoop> &Engine::get_event_loop() const {
+    return event_loop;
+}
+
+void Engine::set_event_loop(const std::shared_ptr<EventLoop> &loop) {
+    this->event_loop = loop;
 }
 
 render::MeshRenderer &Engine::get_global_mesh_renderer() {

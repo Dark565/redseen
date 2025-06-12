@@ -5,10 +5,11 @@
 #include <memory>
 
 #include "render/model.hh"
-#include "engine/engine.hh"
 #include "engine/geometry.hh"
 
 namespace plane_quest::engine {
+
+class Engine;
 
 class BasicObject : public Object {
     glm::mat4 transform;
