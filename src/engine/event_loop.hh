@@ -30,10 +30,8 @@ namespace plane_quest::engine {
 
 /** The base class for event dispatchers. */
 class EventLoop {
-
     using ObserverPrioSet =
         std::multiset<PriorityObserverKey, std::greater<PriorityObserverKey>>;
-    Engine &engine;
 
     ObserverPrioSet event_observer_map;
 
@@ -59,9 +57,9 @@ class EventLoop {
     notify_or_remove_observer(ObserverPrioSet::const_iterator observer_iter,
                               const Event &ev);
 
-    bool notify_observers(const Event &ev);
+    bool pass_event(const Event &ev);
 
-    EventLoop(Engine &engine);
+    EventLoop() = default;
     friend class Engine;
 };
 

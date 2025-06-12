@@ -63,7 +63,7 @@ EventLoop::find_observer(const std::string_view &observer_name) {
     return iter;
 }
 
-bool EventLoop::notify_observers(const Event &ev) {
+bool EventLoop::pass_event(const Event &ev) {
     for (auto iter = event_observer_map.cbegin();
          iter != event_observer_map.cend(); iter++) {
         if (notify_or_remove_observer(iter, ev))
