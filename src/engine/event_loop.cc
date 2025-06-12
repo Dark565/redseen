@@ -6,8 +6,6 @@ namespace plane_quest::engine {
 class Event;
 class Engine;
 
-EventLoop::EventLoop(Engine &engine) : engine(engine) {}
-
 bool EventLoop::register_observer(const std::string_view &observer_name,
                                   std::size_t prio,
                                   const std::weak_ptr<EventObserver> &observer,

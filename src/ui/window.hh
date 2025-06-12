@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include <memory>
+#include <chrono>
 
 struct GLFWwindow;
 
@@ -11,6 +12,8 @@ class Drawer;
 }
 
 namespace plane_quest::ui {
+
+class WindowEventLoop;
 
 struct WindowConfig {
     uint32_t width;
@@ -34,6 +37,10 @@ class Window {
     void hide();
     render::Drawer &getDrawer();
     void *getNativeHandle() const;
+
+    bool
+    pullEventToEventLoop(const std::shared_ptr<WindowEventLoop> &el,
+                         const std::chrono::duration<std::size_t> &timeout);
 
   private:
     std::unique_ptr<WindowImpl> impl; // Use unique_ptr for PIMPL
