@@ -1,9 +1,12 @@
 #pragma once
 
+#include <exception>
 #include <string>
 #include <cstdint>
 #include <memory>
 #include <chrono>
+
+#include "engine/event_loop.hh"
 
 struct GLFWwindow;
 
@@ -38,9 +41,16 @@ class Window {
     render::Drawer &getDrawer();
     void *getNativeHandle() const;
 
-    bool
-    pullEventToEventLoop(const std::shared_ptr<WindowEventLoop> &el,
-                         const std::chrono::duration<std::size_t> &timeout);
+    std::optional<engine::EventLoopStatusPair>
+    pullEvent(const std::shared_ptr<WindowEventLoop> &el,
+              const std::chrono::duration<std::size_t> &timeout);
+
+    std::optional<engine::EventLoopStatusPair>
+    pullEvent(const std::shared_ptr<WindowEventLoop> &el);
+
+    class EventLoopNotAttachedError : public std::logic_error {
+        using std::logic_error::logic_error;
+    };
 
   private:
     std::unique_ptr<WindowImpl> impl; // Use unique_ptr for PIMPL

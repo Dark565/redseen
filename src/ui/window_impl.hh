@@ -5,6 +5,7 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 
+#include "engine/event_loop.hh"
 #include "render/opengl_drawer.hh"
 #include "window.hh"
 
@@ -21,17 +22,20 @@ class WindowImpl {
     render::Drawer &getDrawer();
     void *getNativeHandle() const;
 
-    bool
-    pullEventToEventLoop(const std::shared_ptr<WindowEventLoop> &el,
-                         const std::chrono::duration<std::size_t> &timeout);
+    std::optional<engine::EventLoopStatusPair>
+    pullEvent(const std::shared_ptr<WindowEventLoop> &el,
+              const std::chrono::duration<std::size_t> &timeout);
+
+    std::optional<engine::EventLoopStatusPair>
+    pullEvent(const std::shared_ptr<WindowEventLoop> &el);
 
   private:
     GLFWwindow *window = nullptr;
     std::optional<render::OpenGLDrawer> drawer;
     bool visible;
 
-    std::shared_ptr<WindowEventLoop> waiting_event_loop;
-    bool any_event_pulled = false;
+    std::shared_ptr<WindowEventLoop> pending_event_loop;
+    std::optional<engine::EventLoopStatusPair> event_loop_status;
 
     static void glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
                                      int action, int mods);
