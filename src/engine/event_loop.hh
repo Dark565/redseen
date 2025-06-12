@@ -5,11 +5,12 @@
 #include <string_view>
 #include <memory>
 
+#include "event_observer.hh"
+
 namespace plane_quest::engine {
 
 class Event;
 class Engine;
-class EventObserver;
 
 struct PriorityObserverKey {
     std::size_t prio;
@@ -27,6 +28,8 @@ template <> struct std::greater<plane_quest::engine::PriorityObserverKey> {
 };
 
 namespace plane_quest::engine {
+
+using EventLoopStatusPair = std::pair<bool, ObserverReturnSignal>;
 
 /** The base class for event dispatchers. */
 class EventLoop {
@@ -53,11 +56,14 @@ class EventLoop {
     ObserverPrioSet::const_iterator
     find_observer(const std::string_view &observer_name);
 
-    bool
+    EventLoopStatusPair
     notify_or_remove_observer(ObserverPrioSet::const_iterator observer_iter,
                               const Event &ev);
 
-    bool pass_event(const Event &ev);
+    EventLoopStatusPair pass_event(const Event &ev);
+
+    /** Check if the event loop should be closed based on a status. */
+    bool should_be_closed(const EventLoopStatusPair &status);
 
     EventLoop() = default;
     friend class Engine;

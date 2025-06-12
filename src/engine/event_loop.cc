@@ -61,26 +61,42 @@ EventLoop::find_observer(const std::string_view &observer_name) {
     return iter;
 }
 
-bool EventLoop::pass_event(const Event &ev) {
+EventLoopStatusPair EventLoop::pass_event(const Event &ev) {
+    EventLoopStatusPair observer_res = {false, ObserverReturnSignal::CONTINUE};
+
+    bool any_processed = false;
+
     for (auto iter = event_observer_map.cbegin();
          iter != event_observer_map.cend(); iter++) {
-        if (notify_or_remove_observer(iter, ev))
-            return true;
+        observer_res = notify_or_remove_observer(iter, ev);
+        if (observer_res.first)
+            any_processed = true;
+
+        if (observer_res.first &&
+                observer_res.second == ObserverReturnSignal::BREAK ||
+            observer_res.second == ObserverReturnSignal::END_EVENT_LOOP)
+            return observer_res;
     }
-    return false;
+
+    return {any_processed, observer_res.second};
 }
 
-bool EventLoop::notify_or_remove_observer(
+EventLoopStatusPair EventLoop::notify_or_remove_observer(
     ObserverPrioSet::const_iterator observer_iter, const Event &ev) {
     auto shared_p = observer_iter->observer.lock();
     if (shared_p != nullptr) {
-        return shared_p->on_event(ev);
+        return {true, shared_p->on_event(ev)};
     } else {
         // weak pointer to an observer is expired so remove it
         // from the observer set.
         event_observer_map.erase(observer_iter);
-        return false;
+        return {false, ObserverReturnSignal::CONTINUE};
     }
+}
+
+bool EventLoop::should_be_closed(const EventLoopStatusPair &el_status) {
+    return (el_status.first == false ||
+            el_status.second == ObserverReturnSignal::END_EVENT_LOOP);
 }
 
 } // namespace plane_quest::engine
