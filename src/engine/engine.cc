@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include "editor.hh"
-
 namespace plane_quest::engine {
 
 class EventLoop;
