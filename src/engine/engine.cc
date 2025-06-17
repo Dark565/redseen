@@ -14,13 +14,14 @@ Engine::Engine()
       texture_manager(std::make_shared<TextureManager>()) {}
 
 std::shared_ptr<Editor> Engine::new_editor() {
-    return std::make_shared<Editor>(shared_from_this());
+    return std::make_shared<Editor>(this);
 }
 
-TextureManager &Engine::get_texture_manager() { return texture_manager; }
-
-const TextureManager &Engine::get_texture_manager() const {
+const std::shared_ptr<TextureManager> &Engine::get_texture_manager() const {
     return texture_manager;
+}
+const std::shared_ptr<Renderer> &Engine::get_renderer() const {
+    return renderer;
 }
 
 const std::shared_ptr<EventLoop> &Engine::get_event_loop() const {
@@ -29,14 +30,6 @@ const std::shared_ptr<EventLoop> &Engine::get_event_loop() const {
 
 void Engine::set_event_loop(const std::shared_ptr<EventLoop> &loop) {
     this->event_loop = loop;
-}
-
-render::MeshRenderer &Engine::get_global_mesh_renderer() {
-    return global_mesh_renderer;
-}
-
-const render::MeshRenderer &Engine::get_global_mesh_renderer() const {
-    return global_mesh_renderer;
 }
 
 Camera &Engine::get_player_camera() { return player_camera; }

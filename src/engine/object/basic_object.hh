@@ -11,6 +11,7 @@ namespace plane_quest::engine {
 
 class Engine;
 
+/** External objects should derive from this class */
 class BasicObject : public Object {
     glm::mat4 transform;
     std::shared_ptr<const render::Model> model;
@@ -30,6 +31,8 @@ class BasicObject : public Object {
 
     Position3f get_pos() const override;
     void set_pos(const Position3f &pos) override;
+
+    ObjectUpdateResult update(const std::shared_ptr<Engine> &) override;
     bool render(const std::shared_ptr<Engine> &) override;
 };
 
