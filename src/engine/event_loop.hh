@@ -20,10 +20,10 @@ struct PriorityObserverKey {
 
 } // namespace plane_quest::engine
 
-template <> struct std::greater<plane_quest::engine::PriorityObserverKey> {
+template <> struct std::less<plane_quest::engine::PriorityObserverKey> {
     bool operator()(const plane_quest::engine::PriorityObserverKey &a,
                     const plane_quest::engine::PriorityObserverKey &b) {
-        return std::greater<std::size_t>{}(a.prio, b.prio);
+        return std::less<std::size_t>{}(a.prio, b.prio);
     }
 };
 
@@ -31,16 +31,18 @@ namespace plane_quest::engine {
 
 using EventLoopStatusPair = std::pair<bool, ObserverReturnSignal>;
 
-/** The base class for event dispatchers. */
+/** The base class for priority event dispatchers.
+Lower priority value = higher priority.
+User observers should have priority greater than 0 as 0 is reserved
+for the engine */
 class EventLoop {
-    using ObserverPrioSet =
-        std::multiset<PriorityObserverKey, std::greater<PriorityObserverKey>>;
+    using ObserverPrioSet = std::multiset<PriorityObserverKey>;
 
     ObserverPrioSet event_observer_map;
 
   public:
     bool register_observer(const std::string_view &observer_name,
-                           std::size_t prio,
+                           std::size_t priority_class, std::size_t priority,
                            const std::weak_ptr<EventObserver> &,
                            bool allow_duplicates = false);
 
@@ -51,6 +53,14 @@ class EventLoop {
                                bool include_duplicates = false);
 
     virtual bool run() = 0;
+
+    /** Wrap priority to be used as priority for registering observers.
+    Engine's internal prefix is 0. */
+    static std::size_t wrap_prio(size_t prefix, size_t prio);
+
+    /** Unwrap priority used for registering. */
+    static std::pair<std::size_t, std::size_t>
+    unwrap_prio(std::size_t wrapped_prio);
 
   protected:
     ObserverPrioSet::const_iterator
@@ -64,6 +74,9 @@ class EventLoop {
 
     /** Check if the event loop should be closed based on a status. */
     bool should_be_closed(const EventLoopStatusPair &status);
+
+    /** Get a status that an EventLoop should return on exit fron run(). */
+    bool return_status(const EventLoopStatusPair &status);
 
     EventLoop() = default;
     friend class Engine;

@@ -4,7 +4,8 @@
 
 namespace plane_quest::engine {
 
-ObjectManager::ObjectManager(Engine &engine) : engine(engine) {}
+ObjectManager::ObjectManager(const std::shared_ptr<Engine> &engine)
+    : engine(engine) {}
 
 bool ObjectManager::add_object(const std::string_view &view,
                                const SharedObjectPtr &obj_ptr) {

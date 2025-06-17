@@ -1,3 +1,4 @@
+#include <limits>
 #include "event_loop.hh"
 #include "engine/event_observer.hh"
 
@@ -7,14 +8,16 @@ class Event;
 class Engine;
 
 bool EventLoop::register_observer(const std::string_view &observer_name,
-                                  std::size_t prio,
+                                  std::size_t priority_class,
+                                  std::size_t priority,
                                   const std::weak_ptr<EventObserver> &observer,
                                   bool allow_duplicates) {
     if (allow_duplicates &&
         find_observer(observer_name) != event_observer_map.cend())
         return false;
 
-    event_observer_map.emplace(prio, observer_name, observer);
+    event_observer_map.emplace(wrap_prio(priority_class, priority),
+                               observer_name, observer);
     return true;
 }
 
@@ -97,6 +100,30 @@ EventLoopStatusPair EventLoop::notify_or_remove_observer(
 bool EventLoop::should_be_closed(const EventLoopStatusPair &el_status) {
     return (el_status.first == false ||
             el_status.second == ObserverReturnSignal::END_EVENT_LOOP);
+}
+
+bool EventLoop::return_status(const EventLoopStatusPair &el_status) {
+    /** If event loop should be restarted, true is returned. */
+    return el_status.second == ObserverReturnSignal::RESTART_EVENT_LOOP;
+}
+
+std::size_t EventLoop::wrap_prio(std::size_t prefix, std::size_t prio) {
+    constexpr auto sizet_bits = std::numeric_limits<std::size_t>::digits;
+    constexpr auto shift_bits = sizet_bits / 2;
+    constexpr auto low_mask = (std::size_t(1) << shift_bits) - 1;
+    auto clamped_prefix = std::min(prefix, low_mask);
+    auto clamped_prio = std::min(prio, low_mask);
+
+    return ((clamped_prefix & low_mask) << shift_bits) |
+           (clamped_prio & low_mask);
+}
+
+std::pair<std::size_t, std::size_t> EventLoop::unwrap_prio(std::size_t wprio) {
+    constexpr auto sizet_bits = std::numeric_limits<std::size_t>::digits;
+    constexpr auto shift_bits = sizet_bits / 2;
+    constexpr auto low_mask = (std::size_t(1) << shift_bits) - 1;
+
+    return {wprio >> shift_bits, wprio & low_mask};
 }
 
 } // namespace plane_quest::engine

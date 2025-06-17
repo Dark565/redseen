@@ -15,8 +15,9 @@ enum class EventType {
 struct Event {
     EventType type;
 
-  protected:
-    Event() = default;
+    virtual ~Event() = default;
+
+    Event(EventType type) : type(type) {}
 };
 
 struct EngineEvent : Event {};

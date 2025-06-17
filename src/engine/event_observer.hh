@@ -3,7 +3,12 @@ namespace plane_quest::engine {
 
 struct Event;
 
-enum class ObserverReturnSignal { CONTINUE, BREAK, END_EVENT_LOOP };
+enum class ObserverReturnSignal {
+    CONTINUE,
+    BREAK,
+    END_EVENT_LOOP,
+    RESTART_EVENT_LOOP
+};
 
 class EventObserver {
   public:
