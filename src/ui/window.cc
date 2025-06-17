@@ -27,7 +27,7 @@ void *Window::getNativeHandle() const { return impl->getNativeHandle(); }
 
 std::optional<engine::EventLoopStatusPair>
 Window::pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-                  const std::chrono::duration<std::size_t> &timeout) {
+                  const std::chrono::microseconds &timeout) {
     return impl->pullEvent(el, timeout);
 }
 
@@ -57,7 +57,7 @@ void WindowImpl::glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
         break;
     }
 
-    window_event::Key event = {.key = key, .action = ev_action};
+    window_event::Key event = {key, ev_action};
     impl->event_loop_status = el->pass_event(event);
 }
 
@@ -95,8 +95,7 @@ void WindowImpl::glfw_ev_mouse_button_callback(GLFWwindow *window, int button,
         break;
     }
 
-    window_event::MouseButtonClick event = {.button = ev_button,
-                                            .action = ev_action};
+    window_event::MouseButtonClick event = {ev_button, ev_action};
 
     impl->event_loop_status = el->pass_event(event);
 }
@@ -109,8 +108,8 @@ void WindowImpl::glfw_ev_cursor_position_callback(GLFWwindow *window,
     if (el == nullptr)
         return;
 
-    window_event::MouseMoveEvent event = {.x = static_cast<std::size_t>(xpos),
-                                          .y = static_cast<std::size_t>(ypos)};
+    window_event::MouseMoveEvent event = {static_cast<std::size_t>(xpos),
+                                          static_cast<std::size_t>(ypos)};
 
     impl->event_loop_status = el->pass_event(event);
 }
@@ -161,7 +160,7 @@ void *WindowImpl::getNativeHandle() const { return window; }
 
 std::optional<engine::EventLoopStatusPair>
 WindowImpl::pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-                      const std::chrono::duration<std::size_t> &timeout) {
+                      const std::chrono::microseconds &timeout) {
     double timeout_sec = std::chrono::duration<double>(timeout).count();
     this->pending_event_loop = el;
     this->event_loop_status = std::nullopt;

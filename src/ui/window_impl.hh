@@ -24,7 +24,7 @@ class WindowImpl {
 
     std::optional<engine::EventLoopStatusPair>
     pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-              const std::chrono::duration<std::size_t> &timeout);
+              const std::chrono::microseconds &timeout);
 
     std::optional<engine::EventLoopStatusPair>
     pullEvent(const std::shared_ptr<WindowEventLoop> &el);

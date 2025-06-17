@@ -19,24 +19,38 @@ enum class Type {
 enum class Action { PRESS, RELEASE };
 
 struct WindowEvent : engine::Event {
-    WindowEvent() = default;
     Type window_event_type;
+
+    WindowEvent(Type window_event_type)
+        : engine::Event(engine::EventType::EXTERNAL),
+          window_event_type(window_event_type) {}
 };
 
 struct MouseMoveEvent : WindowEvent {
     size_t x, y;
+
+    MouseMoveEvent(size_t x, size_t y)
+        : WindowEvent(Type::MOUSE_MOVE), x(x), y(y) {}
 };
 
 struct MouseButtonClick : WindowEvent {
     enum class Button { LEFT = 0, RIGHT = 1, MIDDLE = 2 } button;
     Action action;
+    MouseButtonClick(Button button, Action action)
+        : WindowEvent(Type::MOUSE_BUTTON_CLICK), button(button),
+          action(action) {}
 };
 
-struct Focus : WindowEvent {};
+struct Focus : WindowEvent {
+    Focus() : WindowEvent(Type::FOCUS) {}
+};
 
 struct Key : WindowEvent {
     int key;
     Action action;
+
+    Key(int key, Action action)
+        : WindowEvent(Type::KEY), key(key), action(action) {}
 };
 
 } // namespace window_event

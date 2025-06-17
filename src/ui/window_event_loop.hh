@@ -1,9 +1,11 @@
 #pragma once
 
+#include <chrono>
 #include <memory>
 
 #include "engine/event_loop.hh"
 #include <memory>
+#include <ratio>
 
 namespace plane_quest::ui {
 class Window;
@@ -20,9 +22,13 @@ class WindowEventLoop : public engine::EventLoop,
     create(const std::shared_ptr<plane_quest::ui::Window> &window);
 
   protected:
-    WindowEventLoop(const std::shared_ptr<plane_quest::ui::Window> &window);
+    WindowEventLoop(const std::shared_ptr<plane_quest::ui::Window> &window,
+                    const std::chrono::microseconds &tickDelay);
 
     friend class WindowImpl;
+
+  private:
+    std::chrono::microseconds tickDelay;
 };
 
 } // namespace plane_quest::ui

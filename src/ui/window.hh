@@ -26,7 +26,7 @@ struct WindowConfig {
 
 class WindowImpl; // Forward declaration
 
-class Window {
+class Window : std::enable_shared_from_this<Window> {
   public:
     Window(const WindowConfig &conf);
     ~Window();
@@ -43,11 +43,10 @@ class Window {
 
     std::optional<engine::EventLoopStatusPair>
     pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-              const std::chrono::duration<std::size_t> &timeout);
+              const std::chrono::microseconds &timeout);
 
     std::optional<engine::EventLoopStatusPair>
     pullEvent(const std::shared_ptr<WindowEventLoop> &el);
-
     class EventLoopNotAttachedError : public std::logic_error {
         using std::logic_error::logic_error;
     };
