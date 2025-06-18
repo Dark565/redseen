@@ -15,8 +15,14 @@ WindowEventLoop::WindowEventLoop(const std::shared_ptr<ui::Window> &window,
     : window(window), tickDelay(tickDelay) {}
 
 std::shared_ptr<WindowEventLoop>
-WindowEventLoop::create(const std::shared_ptr<ui::Window> &window) {
-    return std::make_shared<WindowEventLoop>(window);
+WindowEventLoop::create(const std::shared_ptr<ui::Window> &window,
+                        const std::chrono::microseconds &tickDelay) {
+    struct SharedHelper : public WindowEventLoop {
+        SharedHelper(const std::shared_ptr<ui::Window> &window,
+                     const std::chrono::microseconds &tickDelay)
+            : WindowEventLoop(window, tickDelay) {}
+    };
+    return std::make_shared<SharedHelper>(window, tickDelay);
 }
 
 bool WindowEventLoop::run() {

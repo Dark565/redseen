@@ -19,9 +19,11 @@ class WindowEventLoop : public engine::EventLoop,
     bool run() override;
 
     static std::shared_ptr<WindowEventLoop>
-    create(const std::shared_ptr<plane_quest::ui::Window> &window);
+    create(const std::shared_ptr<plane_quest::ui::Window> &window,
+           const std::chrono::microseconds &tickDelay);
 
   protected:
+  
     WindowEventLoop(const std::shared_ptr<plane_quest::ui::Window> &window,
                     const std::chrono::microseconds &tickDelay);
 
