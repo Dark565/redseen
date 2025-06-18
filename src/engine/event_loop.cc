@@ -17,7 +17,7 @@ bool EventLoop::register_observer(const std::string_view &observer_name,
         return false;
 
     event_observer_map.emplace(wrap_prio(priority_class, priority),
-                               observer_name, observer);
+                               std::string(observer_name), observer);
     return true;
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include "engine/engine.hh"
 #include "engine/geometry.hh"
+#include "engine/object/object.hh"
 #include "render/model.hh"
 
 namespace plane_quest::engine {
@@ -39,8 +40,14 @@ void BasicObject::set_pos(const Position3f &pos) {
     auto tr = get_transform();
     this->transform[3] = glm::vec4(pos, tr[3][3]);
 }
+
+ObjectUpdateResult BasicObject::update(const std::shared_ptr<Engine> &engine) {
+    return ObjectUpdateResult::NORMAL;
+}
+
 bool BasicObject::render(const std::shared_ptr<Engine> &engine) {
     model->render(engine->get_global_mesh_renderer(), get_transform());
+    return true;
 }
 
 } // namespace plane_quest::engine

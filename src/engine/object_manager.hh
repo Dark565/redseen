@@ -49,6 +49,8 @@ class ObjectManager : public EventObserver {
   private:
     bool add_object(const std::string_view &key,
                     const SharedObjectPtr &shared_ptr);
+
+    bool remove_object(const std::string_view &key);
 };
 
 } // namespace plane_quest::engine

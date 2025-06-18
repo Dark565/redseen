@@ -33,7 +33,6 @@ class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
 
     bool run();
 
-    std::shared_ptr<Editor> new_editor();
     const std::shared_ptr<TextureManager> &get_texture_manager() const;
     const std::shared_ptr<ObjectManager> &get_object_manager() const;
     const std::shared_ptr<Renderer> &get_renderer() const;

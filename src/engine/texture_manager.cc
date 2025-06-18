@@ -3,6 +3,8 @@
 
 namespace plane_quest::engine {
 
+TextureManager::TextureManager() {}
+
 TextureManager::SharedTexture TextureManager::get(const TextureKey &key) const {
     return texture_map.at(key);
 }

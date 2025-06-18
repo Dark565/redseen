@@ -22,8 +22,8 @@ struct PriorityObserverKey {
 
 template <> struct std::less<plane_quest::engine::PriorityObserverKey> {
     bool operator()(const plane_quest::engine::PriorityObserverKey &a,
-                    const plane_quest::engine::PriorityObserverKey &b) {
-        return std::less<std::size_t>{}(a.prio, b.prio);
+                    const plane_quest::engine::PriorityObserverKey &b) const {
+        return std::less<decltype(a.prio)>{}(a.prio, b.prio);
     }
 };
 
