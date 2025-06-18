@@ -63,12 +63,14 @@ static int cubicToCallback(const FT_Vector *control1, const FT_Vector *control2,
 }
 }
 
-std::unique_ptr<TextMesh>
-TextMesh::fromString(const std::string &text, const std::shared_ptr<Font> &font,
-                     float scale) {
-    auto mesh = std::make_unique<TextMesh>();
+std::unique_ptr<Mesh>
+TextMeshFactory::fromString(const std::string &text,
+                            const std::shared_ptr<Font> &font, float scale) {
     float pen_x = 0.0f;
     const float depth = -5.0f;
+
+    std::vector<MeshVertex> vertices;
+    std::vector<unsigned int> indices;
 
     // Setup FreeType outline callbacks
     FT_Outline_Funcs funcs;
@@ -106,32 +108,32 @@ TextMesh::fromString(const std::string &text, const std::shared_ptr<Font> &font,
         }
 
         // Create vertices
-        size_t baseVertex = mesh->vertices.size();
+        size_t baseVertex = vertices.size();
         for (const auto &point : points) {
             float u = (point.x - xpos) / (ch.size.x * scale);
             float v = 1.0f - (point.y - (ypos - ch.size.y * scale)) /
                                  (ch.size.y * scale);
 
             // Front vertex
-            mesh->vertices.push_back(
+            vertices.push_back(
                 {glm::vec3(point.x, point.y, 0.0f), glm::vec2(u, v)});
 
             // Back vertex
-            mesh->vertices.push_back(
+            vertices.push_back(
                 {glm::vec3(point.x, point.y, depth), glm::vec2(u, v)});
         }
 
         // Generate triangles
         for (size_t i = 1; i < points.size() - 1; i++) {
             // Front face (counter-clockwise)
-            mesh->indices.push_back(baseVertex);
-            mesh->indices.push_back(baseVertex + i * 2);
-            mesh->indices.push_back(baseVertex + (i + 1) * 2);
+            indices.push_back(baseVertex);
+            indices.push_back(baseVertex + i * 2);
+            indices.push_back(baseVertex + (i + 1) * 2);
 
             // Back face (clockwise)
-            mesh->indices.push_back(baseVertex + 1);
-            mesh->indices.push_back(baseVertex + (i + 1) * 2 + 1);
-            mesh->indices.push_back(baseVertex + i * 2 + 1);
+            indices.push_back(baseVertex + 1);
+            indices.push_back(baseVertex + (i + 1) * 2 + 1);
+            indices.push_back(baseVertex + i * 2 + 1);
         }
 
         // Generate side faces
@@ -140,20 +142,20 @@ TextMesh::fromString(const std::string &text, const std::shared_ptr<Font> &font,
             size_t next = baseVertex + ((i + 1) % points.size()) * 2;
 
             // First triangle
-            mesh->indices.push_back(current);
-            mesh->indices.push_back(next);
-            mesh->indices.push_back(current + 1);
+            indices.push_back(current);
+            indices.push_back(next);
+            indices.push_back(current + 1);
 
             // Second triangle
-            mesh->indices.push_back(next);
-            mesh->indices.push_back(next + 1);
-            mesh->indices.push_back(current + 1);
+            indices.push_back(next);
+            indices.push_back(next + 1);
+            indices.push_back(current + 1);
         }
 
         pen_x += (ch.advance >> 6) * scale;
     }
 
-    return mesh;
+    return std::make_unique<Mesh>(std::move(vertices), std::move(indices));
 }
 
 } // namespace plane_quest::render
