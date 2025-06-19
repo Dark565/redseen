@@ -36,7 +36,7 @@ class OpenGLMeshHandle {
 
     OpenGLMeshHandle duplicate() const;
 
-    static OpenGLMeshHandle create_from_mesh(const Mesh &mesh);
+    static std::unique_ptr<OpenGLMeshHandle> create_from_mesh(const Mesh &mesh);
 };
 
 }; // namespace plane_quest::render

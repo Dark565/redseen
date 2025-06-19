@@ -46,6 +46,8 @@ unsigned int OpenGLMeshHandle::get_vbo() const { return VBO; }
 
 unsigned int OpenGLMeshHandle::get_ebo() const { return EBO; }
 
+std::size_t OpenGLMeshHandle::get_index_count() const { return index_count; }
+
 void OpenGLMeshHandle::load_mesh(const Mesh &mesh) {
     const auto &vertices = mesh.get_vertices();
     const auto &indices = mesh.get_indices();
@@ -77,9 +79,10 @@ void OpenGLMeshHandle::load_mesh(const Mesh &mesh) {
     index_count = indices.size();
 }
 
-OpenGLMeshHandle OpenGLMeshHandle::create_from_mesh(const Mesh &mesh) {
-    OpenGLMeshHandle handle;
-    handle.load_mesh(mesh);
+std::unique_ptr<OpenGLMeshHandle>
+OpenGLMeshHandle::create_from_mesh(const Mesh &mesh) {
+    auto handle = std::make_unique<OpenGLMeshHandle>();
+    handle->load_mesh(mesh);
     return handle;
 }
 
