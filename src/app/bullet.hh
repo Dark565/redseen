@@ -11,7 +11,8 @@ class Model;
 
 namespace plane_quest::engine {
 class Engine;
-}
+class Model;
+} // namespace plane_quest::engine
 
 namespace plane_quest::app {
 
@@ -23,17 +24,16 @@ class Bullet : public engine::BasicObject {
 
   public:
     Bullet(const glm::vec3 &start_pos,
-           const std::shared_ptr<render::Model> &model,
+           std::shared_ptr<const engine::Model> model,
            const glm::vec3 &velocity, float accel = 0.f,
            float max_distance = INFINITY);
 
     Bullet(const glm::mat4 &transform,
-           const std::shared_ptr<render::Model> &model,
+           std::shared_ptr<const engine::Model> model,
            const glm::vec3 &velocity, float accel = 0.f,
            float max_distance = INFINITY);
 
-    engine::ObjectUpdateResult
-    update(const std::shared_ptr<engine::Engine> &engine) override;
+    engine::ObjectUpdateResult update(engine::Engine &) override;
 };
 
 } // namespace plane_quest::app
