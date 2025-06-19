@@ -6,6 +6,7 @@
 #include <glm/matrix.hpp>
 #include <memory>
 #include "engine/engine.hh"
+#include "engine/model.hh"
 #include "engine/geometry.hh"
 #include "engine/object/object.hh"
 #include "render/model.hh"
@@ -13,18 +14,16 @@
 namespace plane_quest::engine {
 
 BasicObject::BasicObject(const glm::mat4 &transform,
-                         const std::shared_ptr<const render::Model> &model)
-    : transform(transform), model(model) {}
+                         std::shared_ptr<const Model> model)
+    : transform(transform), model(std::move(model)) {}
 
 BasicObject::BasicObject(const Position3f &pos,
-                         const std::shared_ptr<const render::Model> &model)
-    : BasicObject(glm::translate(glm::mat4(1.0f), pos), model) {}
+                         std::shared_ptr<const Model> model)
+    : BasicObject(glm::translate(glm::mat4(1.0f), pos), std::move(model)) {}
 
-std::shared_ptr<const render::Model> BasicObject::get_model() const {
-    return model;
-}
+std::shared_ptr<const Model> BasicObject::get_model() const { return model; }
 
-void BasicObject::set_model(const std::shared_ptr<const render::Model> &model) {
+void BasicObject::set_model(std::shared_ptr<const Model> model) {
     this->model = model;
 }
 
@@ -41,13 +40,12 @@ void BasicObject::set_pos(const Position3f &pos) {
     this->transform[3] = glm::vec4(pos, tr[3][3]);
 }
 
-ObjectUpdateResult BasicObject::update(const std::shared_ptr<Engine> &engine) {
+ObjectUpdateResult BasicObject::update(Engine &engine) {
     return ObjectUpdateResult::NORMAL;
 }
 
-bool BasicObject::render(const std::shared_ptr<Engine> &engine) {
-    model->render(engine->get_global_mesh_renderer(), get_transform());
-    return true;
+bool BasicObject::render(Engine &engine) {
+    return engine.get_renderer()->render({*get_model(), get_transform()});
 }
 
 } // namespace plane_quest::engine

@@ -22,14 +22,15 @@ ObserverReturnSignal ObjectManager::on_event(const Event &event) {
     if (event.type != EventType::TICK)
         return ObserverReturnSignal::CONTINUE;
 
-    for (auto &object_pair : obj_map) {
-        ObjectUpdateResult result = object_pair.second->update(engine);
+    for (const auto &object_pair : obj_map) {
+        ObjectUpdateResult result = object_pair.second->update(*engine);
         switch (result) {
         case ObjectUpdateResult::DESTROY:
             remove_object(object_pair.first);
             break;
         }
     }
+    return ObserverReturnSignal::CONTINUE;
 }
 
 } // namespace plane_quest::engine

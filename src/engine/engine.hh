@@ -3,12 +3,10 @@
 #include <memory>
 
 #include "common/noncopyable.hh"
-#include "engine/event_observer.hh"
 #include "render/mesh_renderer.hh"
 #include "texture_manager.hh"
 #include "object_manager.hh"
 #include "event_loop.hh"
-#include "event_observer.hh"
 #include "renderer.hh"
 #include "camera.hh"
 
@@ -23,10 +21,12 @@ class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
     std::shared_ptr<ObjectManager> object_manager;
     std::shared_ptr<EventLoop> event_loop;
     std::shared_ptr<Renderer> renderer;
-    render::MeshRenderer global_mesh_renderer;
     Camera player_camera;
 
-    Engine();
+    Engine() = default;
+
+    void init();
+    void init_opengl();
 
   public:
     static std::shared_ptr<Engine> create();
@@ -38,9 +38,7 @@ class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
     const std::shared_ptr<Renderer> &get_renderer() const;
     const std::shared_ptr<EventLoop> &get_event_loop() const;
     void set_event_loop(const std::shared_ptr<EventLoop> &);
-
-    render::MeshRenderer &get_global_mesh_renderer();
-    const render::MeshRenderer &get_global_mesh_renderer() const;
+    void set_renderer(const std::shared_ptr<Renderer> &);
 
     Camera &get_player_camera();
     const Camera &get_player_camera() const;

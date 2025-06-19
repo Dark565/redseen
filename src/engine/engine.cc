@@ -1,18 +1,14 @@
 #include "engine.hh"
-#include "camera.hh"
-#include "engine/texture_manager.hh"
-#include "event_observer.hh"
-#include "render/mesh_renderer.hh"
 
 #include <memory>
+#include <glad/glad.h>
 
+#include "camera.hh"
+#include "engine/object/object.hh"
+#include "engine/texture_manager.hh"
 namespace plane_quest::engine {
 
 class EventLoop;
-
-Engine::Engine()
-    : object_manager(std::make_shared<ObjectManager>(shared_from_this())),
-      texture_manager(std::make_shared<TextureManager>()) {}
 
 const std::shared_ptr<TextureManager> &Engine::get_texture_manager() const {
     return texture_manager;
@@ -34,20 +30,30 @@ void Engine::set_event_loop(const std::shared_ptr<EventLoop> &loop) {
     this->event_loop = loop;
 }
 
-render::MeshRenderer &Engine::get_global_mesh_renderer() {
-    return global_mesh_renderer;
-}
-
-const render::MeshRenderer &Engine::get_global_mesh_renderer() const {
-    return global_mesh_renderer;
+void Engine::set_renderer(const std::shared_ptr<Renderer> &renderer) {
+    this->renderer = renderer;
 }
 
 Camera &Engine::get_player_camera() { return player_camera; }
 
 const Camera &Engine::get_player_camera() const { return player_camera; }
 
+void Engine::init_opengl() {
+    // Setup OpenGL state
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Engine::init() {
+    object_manager = std::make_shared<ObjectManager>(shared_from_this());
+    texture_manager = std::make_shared<TextureManager>();
+}
+
 bool Engine::run() {
     bool ret;
+
+    get_renderer()->init();
 
     // TODO: Throw an exception if event_loop is not defined
 
@@ -66,6 +72,13 @@ bool Engine::run() {
                    // should be restarted.
 
     return true;
+}
+
+std::shared_ptr<Engine> Engine::create() {
+    struct SharedHelper : public Engine {};
+    std::shared_ptr<Engine> engine_ = std::make_shared<SharedHelper>();
+    engine_->init();
+    return engine_;
 }
 
 } // namespace plane_quest::engine

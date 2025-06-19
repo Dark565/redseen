@@ -1,30 +1,25 @@
 #pragma once
 
-#include "object.hh"
-
 #include <memory>
 
-#include "render/model.hh"
-#include "engine/geometry.hh"
+#include "object.hh"
 
 namespace plane_quest::engine {
 
+class Model;
 class Engine;
 
 /** External objects should derive from this class */
 class BasicObject : public Object {
     glm::mat4 transform;
-    std::shared_ptr<const render::Model> model;
+    std::shared_ptr<const Model> model;
 
   public:
-    BasicObject(const glm::mat4 &,
-                const std::shared_ptr<const render::Model> &);
+    BasicObject(const glm::mat4 &, std::shared_ptr<const Model>);
+    BasicObject(const Position3f &, std::shared_ptr<const Model>);
 
-    BasicObject(const Position3f &,
-                const std::shared_ptr<const render::Model> &);
-
-    std::shared_ptr<const render::Model> get_model() const;
-    void set_model(const std::shared_ptr<const render::Model> &model);
+    std::shared_ptr<const Model> get_model() const;
+    void set_model(std::shared_ptr<const Model> model);
 
     glm::mat4 get_transform() const;
     void set_transform(const glm::mat4 &transform);
@@ -32,8 +27,8 @@ class BasicObject : public Object {
     Position3f get_pos() const override;
     void set_pos(const Position3f &pos) override;
 
-    ObjectUpdateResult update(const std::shared_ptr<Engine> &) override;
-    bool render(const std::shared_ptr<Engine> &) override;
+    ObjectUpdateResult update(Engine &) override;
+    bool render(Engine &) override;
 };
 
 } // namespace plane_quest::engine
