@@ -7,6 +7,7 @@
 #include <chrono>
 
 #include "engine/event_loop.hh"
+#include "render/opengl_drawer.hh"
 
 struct GLFWwindow;
 
@@ -24,21 +25,21 @@ struct WindowConfig {
     std::string name;
 };
 
-class WindowImpl; // Forward declaration
+class WindowImpl;
 
 class Window : std::enable_shared_from_this<Window> {
   public:
     Window(const WindowConfig &conf);
     ~Window();
 
-    Window(const Window &) = delete;            // Disable copy constructor
-    Window &operator=(const Window &) = delete; // Disable copy assignment
+    Window(const Window &) = delete;
+    Window &operator=(const Window &) = delete;
 
-    Window(Window &&) = default;            // Enable move constructor
-    Window &operator=(Window &&) = default; // Enable move assignment
+    Window(Window &&) = default;
+    Window &operator=(Window &&) = default;
     void show();
     void hide();
-    render::Drawer &getDrawer();
+    const std::shared_ptr<render::OpenGLDrawer> &getDrawer() const;
     void *getNativeHandle() const;
 
     std::optional<engine::EventLoopStatusPair>

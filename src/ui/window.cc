@@ -22,7 +22,9 @@ Window::~Window() = default;
 
 void Window::show() { impl->show(); }
 void Window::hide() { impl->hide(); }
-render::Drawer &Window::getDrawer() { return impl->getDrawer(); }
+const std::shared_ptr<render::OpenGLDrawer> &Window::getDrawer() const {
+    return impl->getDrawer();
+}
 void *Window::getNativeHandle() const { return impl->getNativeHandle(); }
 
 std::optional<engine::EventLoopStatusPair>
@@ -131,8 +133,8 @@ WindowImpl::WindowImpl(const WindowConfig &conf) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
-    drawer = std::make_optional<render::OpenGLDrawer>(conf.width, conf.height,
-                                                      window);
+    drawer =
+        std::make_shared<render::OpenGLDrawer>(conf.width, conf.height, window);
 }
 
 WindowImpl::~WindowImpl() {
@@ -152,9 +154,9 @@ void WindowImpl::hide() {
     glfwHideWindow(window);
 }
 
-render::Drawer &WindowImpl::getDrawer() {
-    return *drawer;
-} // Corrected return type
+const std::shared_ptr<render::OpenGLDrawer> &WindowImpl::getDrawer() const {
+    return drawer;
+}
 
 void *WindowImpl::getNativeHandle() const { return window; }
 

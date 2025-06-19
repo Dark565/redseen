@@ -19,7 +19,7 @@ class WindowImpl {
 
     void show();
     void hide();
-    render::Drawer &getDrawer();
+    const std::shared_ptr<render::OpenGLDrawer> &getDrawer() const;
     void *getNativeHandle() const;
 
     std::optional<engine::EventLoopStatusPair>
@@ -31,7 +31,7 @@ class WindowImpl {
 
   private:
     GLFWwindow *window = nullptr;
-    std::optional<render::OpenGLDrawer> drawer;
+    std::shared_ptr<render::OpenGLDrawer> drawer;
     bool visible;
 
     std::shared_ptr<WindowEventLoop> pending_event_loop;
