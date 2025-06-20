@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <glm/glm.hpp>
 #include "engine/model.hh"
 #include "engine/renderer.hh"
 #include "render/model.hh"
@@ -16,6 +17,7 @@ class OpenGLModel : public Model {
   public:
     OpenGLModel(std::shared_ptr<render::Model>);
 
-    bool render(Renderer &, const RenderRequest &) const override;
+    bool render(Renderer &, const RenderRequest &,
+                const glm::mat4 &view) const override;
 };
 } // namespace plane_quest::engine::model

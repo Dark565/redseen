@@ -9,9 +9,7 @@ Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, float yaw,
     updateCameraVectors();
 }
 
-glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(position, position + front, up);
-}
+glm::mat4 Camera::getViewMatrix() const { return view; }
 
 glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
     return glm::perspective(glm::radians(fov), aspectRatio, nearPlane,
@@ -20,6 +18,7 @@ glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
 
 void Camera::setPosition(const glm::vec3 &newPosition) {
     position = newPosition;
+    updateView();
 }
 
 void Camera::setRotation(float newYaw, float newPitch) {
@@ -28,7 +27,10 @@ void Camera::setRotation(float newYaw, float newPitch) {
     updateCameraVectors();
 }
 
-void Camera::move(const glm::vec3 &offset) { position += offset; }
+void Camera::move(const glm::vec3 &offset) {
+    position += offset;
+    updateView();
+}
 
 void Camera::rotate(float yawOffset, float pitchOffset) {
     yaw += yawOffset;
@@ -43,6 +45,10 @@ void Camera::rotate(float yawOffset, float pitchOffset) {
     updateCameraVectors();
 }
 
+void Camera::updateView() {
+    view = glm::lookAt(position, position + front, up);
+}
+
 void Camera::updateCameraVectors() {
     glm::vec3 newFront;
     newFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -52,6 +58,8 @@ void Camera::updateCameraVectors() {
 
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
+
+    updateView();
 }
 
 } // namespace plane_quest::engine

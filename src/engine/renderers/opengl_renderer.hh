@@ -24,7 +24,8 @@ class OpenGLRenderer : public engine::Renderer {
     std::unique_ptr<render::MeshRenderer> mesh_renderer;
 
   public:
-    OpenGLRenderer(std::shared_ptr<render::OpenGLDrawer>);
+    OpenGLRenderer(std::shared_ptr<Engine>,
+                   std::shared_ptr<render::OpenGLDrawer>);
 
     ObserverReturnSignal on_event(const Event &ev) override;
 

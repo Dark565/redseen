@@ -1,5 +1,6 @@
 #include "opengl_renderer.hh"
 
+#include "engine/engine.hh"
 #include "engine/event_observer.hh"
 #include "engine/event.hh"
 #include "engine/renderer.hh"
@@ -9,12 +10,13 @@
 
 namespace plane_quest::engine::renderers {
 
-OpenGLRenderer::OpenGLRenderer(std::shared_ptr<render::OpenGLDrawer> ogl_drawer)
-    : ogl_drawer(ogl_drawer),
+OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Engine> engine,
+                               std::shared_ptr<render::OpenGLDrawer> ogl_drawer)
+    : Renderer(engine), ogl_drawer(ogl_drawer),
       mesh_renderer(std::make_unique<render::MeshRenderer>()) {}
 
 ObserverReturnSignal OpenGLRenderer::on_event(const Event &ev) {
-    if (ev.type != EventType::TICK)
+    if (!ev.has_name(engine_events::TICK))
         return ObserverReturnSignal::CONTINUE;
 
     post_render();
@@ -36,6 +38,7 @@ bool OpenGLRenderer::render(const render::Model &model,
                             const glm::mat4 &transform) {
 
     model.render(*mesh_renderer, transform);
+    return true;
 }
 
 const std::unique_ptr<render::MeshRenderer> &

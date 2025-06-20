@@ -27,6 +27,7 @@ class Camera {
     float getPitch() const { return pitch; }
 
   private:
+    void updateView();
     void updateCameraVectors();
 
     glm::vec3 position;
@@ -34,6 +35,8 @@ class Camera {
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+
+    glm::mat4 view;
 
     float yaw;
     float pitch;

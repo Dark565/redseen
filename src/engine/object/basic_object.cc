@@ -1,5 +1,9 @@
 #include "basic_object.hh"
 
+#include <iostream>
+#include <typeinfo>
+#include <cxxabi.h>
+
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -45,6 +49,9 @@ ObjectUpdateResult BasicObject::update(Engine &engine) {
 }
 
 bool BasicObject::render(Engine &engine) {
+    std::cout << "Rendering "
+              << abi::__cxa_demangle(typeid(*this).name(), nullptr, 0, nullptr)
+              << std::endl;
     return engine.get_renderer()->render({*get_model(), get_transform()});
 }
 

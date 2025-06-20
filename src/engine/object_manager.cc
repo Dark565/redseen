@@ -1,6 +1,7 @@
 #include "object_manager.hh"
 #include "object/object.hh"
 #include "engine/event_observer.hh"
+#include "engine/engine.hh"
 
 #include <string_view>
 
@@ -19,7 +20,7 @@ bool ObjectManager::remove_object(const std::string_view &view) {
 }
 
 ObserverReturnSignal ObjectManager::on_event(const Event &event) {
-    if (event.type != EventType::TICK)
+    if (!event.has_name(engine_events::TICK))
         return ObserverReturnSignal::CONTINUE;
 
     for (const auto &object_pair : obj_map) {
@@ -28,8 +29,11 @@ ObserverReturnSignal ObjectManager::on_event(const Event &event) {
         case ObjectUpdateResult::DESTROY:
             remove_object(object_pair.first);
             break;
+        default:;
         }
+        object_pair.second->render(*engine);
     }
+
     return ObserverReturnSignal::CONTINUE;
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <memory>
 
 #include "common/noncopyable.hh"
@@ -13,6 +14,10 @@
 namespace plane_quest::engine {
 
 enum class PipelinePriority : std::size_t { OBJECT_MANAGER = 0, RENDER = 1 };
+namespace engine_events {
+constexpr std::string_view TICK = "engine.tick";
+constexpr std::string_view RENDER = "engine.render";
+}; // namespace engine_events
 
 class EventObserver;
 class Editor;
@@ -42,6 +47,8 @@ class Engine : NonCopyable, public std::enable_shared_from_this<Engine> {
 
     Camera &get_player_camera();
     const Camera &get_player_camera() const;
+
+    static bool is_engine_event(const Event &);
 };
 
 } // namespace plane_quest::engine

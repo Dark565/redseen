@@ -81,4 +81,8 @@ std::shared_ptr<Engine> Engine::create() {
     return engine_;
 }
 
+static bool is_engine_event(const Event &ev) {
+    return ev.name.starts_with("engine.");
+}
+
 } // namespace plane_quest::engine

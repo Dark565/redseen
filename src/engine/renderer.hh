@@ -28,7 +28,11 @@ struct RenderRequest {
 };
 
 class Renderer : public EventObserver {
+    std::shared_ptr<Engine> engine;
+
   public:
+    Renderer(std::shared_ptr<Engine> engine);
+
     virtual void init() = 0;
     virtual bool post_render() = 0;
     virtual void present() = 0;

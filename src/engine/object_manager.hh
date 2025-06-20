@@ -42,8 +42,8 @@ class ObjectManager : public EventObserver {
         ObjectManagerException(const char *what) : std::logic_error(what) {}
     };
 
-    /** For EventObserver. Receives TICK events and calls .update() for all
-     * objects. */
+    /** For EventObserver. Receives TICK events and calls
+     .update() and .render() for all objects. */
     ObserverReturnSignal on_event(const Event &event) override;
 
   private:

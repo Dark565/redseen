@@ -1,23 +1,22 @@
 #pragma once
 
 #include <cstdlib>
+#include <string_view>
 #include <glm/glm.hpp>
 
 namespace plane_quest::engine {
 
-enum class EventType {
-    /** External event */
-    EXTERNAL = 0x1,
-    TICK = 0x2,
-};
-
 /** Base class for events */
 struct Event {
-    EventType type;
+    std::string_view name;
+
+    Event(const std::string_view &name) : name(name) {}
+
+    bool has_name(const std::string_view &name) const {
+        return this->name == name;
+    }
 
     virtual ~Event() = default;
-
-    Event(EventType type) : type(type) {}
 };
 
 struct EngineEvent : Event {};
