@@ -1,5 +1,6 @@
 #include <chrono>
 #include "window_event_loop.hh"
+#include "engine/engine.hh"
 #include "engine/event.hh"
 #include "engine/event_loop.hh"
 #include "engine/event_observer.hh"
@@ -34,7 +35,7 @@ bool WindowEventLoop::run() {
         auto time_delta = time_now - beg_time;
         for (auto time = time_delta - tickDelay;
              time >= std::chrono::microseconds(0); time -= tickDelay) {
-            pass_event(engine::Event{engine::EventType::TICK});
+            pass_event(engine::Event{engine::engine_events::TICK});
         }
         beg_time = time_now;
 

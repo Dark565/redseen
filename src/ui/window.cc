@@ -38,6 +38,13 @@ Window::pullEvent(const std::shared_ptr<WindowEventLoop> &el) {
     return impl->pullEvent(el);
 }
 
+void WindowImpl::init_callbacks() {
+    glfwSetWindowUserPointer(window, this);
+    glfwSetKeyCallback(window, glfw_ev_key_callback);
+    glfwSetMouseButtonCallback(window, glfw_ev_mouse_button_callback);
+    glfwSetCursorPosCallback(window, glfw_ev_cursor_position_callback);
+}
+
 void WindowImpl::glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
                                       int action, int mods) {
 
@@ -135,6 +142,8 @@ WindowImpl::WindowImpl(const WindowConfig &conf) {
     }
     drawer =
         std::make_shared<render::OpenGLDrawer>(conf.width, conf.height, window);
+
+    init_callbacks();
 }
 
 WindowImpl::~WindowImpl() {

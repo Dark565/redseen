@@ -37,6 +37,8 @@ class WindowImpl {
     std::shared_ptr<WindowEventLoop> pending_event_loop;
     std::optional<engine::EventLoopStatusPair> event_loop_status;
 
+    void init_callbacks();
+
     static void glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
                                      int action, int mods);
 

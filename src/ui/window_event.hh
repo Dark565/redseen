@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string_view>
 
 #include <GLFW/glfw3.h>
 
@@ -9,48 +10,40 @@
 namespace plane_quest::ui {
 
 namespace window_event {
-enum class Type {
-    MOUSE_MOVE = 0x1,
-    MOUSE_BUTTON_CLICK = 0x2,
-    FOCUS = 0x4,
-    KEY = 0x8
-};
+
+constexpr std::string_view MOUSE_MOVE = "window.mouse.move";
+constexpr std::string_view MOUSE_BUTTON_CLICK = "window.button.click";
+constexpr std::string_view FOCUS = "window.focus";
+constexpr std::string_view KEY = "window.key";
 
 enum class Action { PRESS, RELEASE };
 
 struct WindowEvent : engine::Event {
-    Type window_event_type;
-
-    WindowEvent(Type window_event_type)
-        : engine::Event(engine::EventType::EXTERNAL),
-          window_event_type(window_event_type) {}
+    using engine::Event::Event;
 };
 
 struct MouseMoveEvent : WindowEvent {
     size_t x, y;
 
-    MouseMoveEvent(size_t x, size_t y)
-        : WindowEvent(Type::MOUSE_MOVE), x(x), y(y) {}
+    MouseMoveEvent(size_t x, size_t y) : WindowEvent(MOUSE_MOVE), x(x), y(y) {}
 };
 
 struct MouseButtonClick : WindowEvent {
     enum class Button { LEFT = 0, RIGHT = 1, MIDDLE = 2 } button;
     Action action;
     MouseButtonClick(Button button, Action action)
-        : WindowEvent(Type::MOUSE_BUTTON_CLICK), button(button),
-          action(action) {}
+        : WindowEvent(MOUSE_BUTTON_CLICK), button(button), action(action) {}
 };
 
 struct Focus : WindowEvent {
-    Focus() : WindowEvent(Type::FOCUS) {}
+    Focus() : WindowEvent(FOCUS) {}
 };
 
 struct Key : WindowEvent {
     int key;
     Action action;
 
-    Key(int key, Action action)
-        : WindowEvent(Type::KEY), key(key), action(action) {}
+    Key(int key, Action action) : WindowEvent(KEY), key(key), action(action) {}
 };
 
 } // namespace window_event
