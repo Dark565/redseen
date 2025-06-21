@@ -43,7 +43,7 @@ class EventDispatcher {
     using ObserverMap = std::unordered_map<Event::Key, ObserverPrioSet>;
 
     ObserverMap event_observer_map;
-    std::queue<std::shared_ptr<Event>> event_queue;
+    std::deque<std::shared_ptr<Event>> event_queue;
 
   public:
     bool register_observer(const std::string_view &observer_name,
@@ -73,8 +73,8 @@ class EventDispatcher {
                                std::size_t prio,
                                bool include_duplicates = false);
 
-    /** Quene an event */
-    void queue_event(std::shared_ptr<Event>);
+    void queue_last(std::shared_ptr<Event>);
+    void queue_next(std::shared_ptr<Event>);
 
     /** Drop all events in the queue */
     void drop_queue();

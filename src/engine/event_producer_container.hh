@@ -13,7 +13,7 @@ class EventProducerContainer {
     std::unordered_map<std::string, std::shared_ptr<EventProducer>> producers;
 
   public:
-    std::size_t feed_dispatcher(EventDispatcher &);
+    std::size_t feed_dispatcher(EventDispatcher &, bool can_block = false);
 
     bool add_producer(const std::string_view &name,
                       std::shared_ptr<EventProducer> producer);

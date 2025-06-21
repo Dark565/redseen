@@ -61,8 +61,12 @@ bool EventDispatcher::set_observer_priority(
     return any_removed;
 }
 
-void EventDispatcher::queue_event(std::shared_ptr<Event> ev) {
-    event_queue.emplace(std::move(ev));
+void EventDispatcher::queue_last(std::shared_ptr<Event> ev) {
+    event_queue.emplace_back(std::move(ev));
+}
+
+void EventDispatcher::queue_next(std::shared_ptr<Event> ev) {
+    event_queue.emplace_front(std::move(ev));
 }
 
 void EventDispatcher::drop_queue() { event_queue = {}; }
@@ -72,7 +76,7 @@ std::size_t EventDispatcher::dispatch(std::size_t n) {
 
     while (!event_queue.empty()) {
         auto front_ev = std::move(event_queue.front());
-        event_queue.pop();
+        event_queue.pop_front();
         dispatch_event(*front_ev);
         n_dispatched++;
     }

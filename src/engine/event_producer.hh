@@ -9,7 +9,7 @@ class EventDispatcher;
 /** EventProducers are a direct feed of events for an event dispatcher */
 class EventProducer {
   public:
-    virtual std::size_t feed_dispatcher(EventDispatcher &) = 0;
+    virtual std::size_t feed_dispatcher(EventDispatcher &, bool can_block) = 0;
 };
 
 } // namespace plane_quest::engine

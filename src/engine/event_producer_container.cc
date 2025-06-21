@@ -3,11 +3,11 @@
 
 namespace plane_quest::engine {
 
-std::size_t
-EventProducerContainer::feed_dispatcher(EventDispatcher &dispatcher) {
+std::size_t EventProducerContainer::feed_dispatcher(EventDispatcher &dispatcher,
+                                                    bool can_block) {
     std::size_t n_fed = 0;
     for (auto &producer : producers) {
-        n_fed += producer.second->feed_dispatcher(dispatcher);
+        n_fed += producer.second->feed_dispatcher(dispatcher, can_block);
     }
     return n_fed;
 }

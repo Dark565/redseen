@@ -1,16 +1,79 @@
 #include "engine.hh"
 
+#include <chrono>
+#include <thread>
 #include <memory>
 #include <glad/glad.h>
 
 #include "camera.hh"
 #include "engine/event_dispatcher.hh"
 #include "engine/event_observer.hh"
+#include "engine/event_producer_container.hh"
 #include "engine/object/object.hh"
 #include "engine/texture_manager.hh"
 namespace plane_quest::engine {
 
 class EventLoop;
+
+class Engine::FrameState::Start : public Engine::FrameState {
+  public:
+    Start(Engine &engine)
+        : Engine::FrameState(engine, EngineFrameState::START) {}
+    void take_event(const Event &ev) override;
+};
+class Engine::FrameState::WaitingForUpdate : public Engine::FrameState {
+    bool object_update_done : 1 = false;
+    bool render_update_done : 1 = false;
+
+  public:
+    WaitingForUpdate(Engine &engine)
+        : Engine::FrameState(engine, EngineFrameState::WAITING_FOR_UPDATE) {}
+    void take_event(const Event &ev) override;
+};
+class Engine::FrameState::WaitingForRender : public Engine::FrameState {
+  public:
+    WaitingForRender(Engine &engine)
+        : Engine::FrameState(engine, EngineFrameState::WAITING_FOR_RENDER) {}
+    void take_event(const Event &ev) override;
+};
+
+void Engine::FrameState::Start::take_event(const Event &ev) {
+    if (!ev.has_name(engine_events::TICK))
+        return;
+
+    engine.get_internal_event_dispatcher()->queue_next(
+        std::make_shared<Event>(engine_events::UPDATE));
+
+    engine.frame_state = std::unique_ptr<FrameState>(
+        new Engine::FrameState::WaitingForUpdate(engine));
+}
+
+void Engine::FrameState::WaitingForUpdate::take_event(const Event &ev) {
+    if (ev.has_name(engine_events::OBJECT_UPDATE_DONE))
+        object_update_done = true;
+    else if (ev.has_name(engine_events::RENDER_UPDATE_DONE))
+        render_update_done = true;
+    else
+        return;
+
+    if (object_update_done && render_update_done) {
+        engine.get_internal_event_dispatcher()->queue_next(
+            std::make_shared<Event>(engine_events::RENDER));
+        engine.frame_state = std::unique_ptr<FrameState>(
+            new Engine::FrameState::WaitingForRender(engine));
+    }
+}
+
+void Engine::FrameState::WaitingForRender::take_event(const Event &ev) {
+    if (!ev.has_name(engine_events::RENDER_DONE))
+        return;
+
+    engine.get_internal_event_dispatcher()->queue_next(
+        std::make_shared<Event>(engine_events::PRESENT));
+
+    engine.frame_state =
+        std::unique_ptr<FrameState>(new Engine::FrameState::Start(engine));
+}
 
 const std::shared_ptr<TextureManager> &Engine::get_texture_manager() const {
     return texture_manager;
@@ -51,6 +114,7 @@ void Engine::init_opengl() {
 void Engine::init() {
     event_dispatcher = std::make_unique<EventDispatcher>();
     internal_event_dispatcher = std::make_unique<EventDispatcher>();
+    event_producers = std::make_unique<EventProducerContainer>();
     object_manager = std::make_shared<ObjectManager>(shared_from_this());
     texture_manager = std::make_shared<TextureManager>();
 }
@@ -67,9 +131,11 @@ bool Engine::run() {
     get_object_manager()->subscribe_dispatcher(get_object_manager(),
                                                *internal_event_dispatcher);
 
-    while (1) {
-    }
+    internal_event_producers->add_producer("engine", shared_from_this());
 
+    tick_start_time = std::chrono::steady_clock::now();
+
+    internal_dispatch_loop();
     return true;
 }
 
@@ -81,30 +147,7 @@ std::shared_ptr<Engine> Engine::create() {
 }
 
 ObserverReturnSignal Engine::on_event(const Event &ev) {
-    if (ev.has_name(engine_events::TICK)) {
-        if (tick_state.state != EngineTickState::START)
-            return ObserverReturnSignal::CONTINUE;
-
-        event_dispatcher->queue_event(
-            std::make_shared<Event>(engine_events::UPDATE));
-    } else if (ev.has_name(engine_events::OBJECT_UPDATE_DONE)) {
-        tick_state.object_update_done = 1;
-    } else if (ev.has_name(engine_events::RENDER_UPDATE_DONE)) {
-        tick_state.render_update_done = 1;
-    } else if (ev.has_name(engine_events::RENDER_DONE)) {
-        if (tick_state.state != EngineTickState::UPDATE_DONE)
-            return ObserverReturnSignal::CONTINUE;
-
-        internal_event_dispatcher->queue_event(
-            std::make_shared<Event>(engine_events::PRESENT));
-    }
-
-    if (tick_state.state == EngineTickState::START &&
-        tick_state.object_update_done && tick_state.render_update_done) {
-        internal_event_dispatcher->queue_event(
-            std::make_shared<Event>(engine_events::RENDER));
-    }
-
+    frame_state->take_event(ev);
     return ObserverReturnSignal::CONTINUE;
 }
 
@@ -118,6 +161,54 @@ void Engine::subscribe_dispatcher(EventDispatcher &disp) {
         std::size_t(PipelinePriority::ENGINE), weak_from_this());
 }
 
-void Engine::reset_tick_state() { tick_state = {}; }
+void Engine::reset_frame_state() {}
+
+void Engine::internal_dispatch_loop() {
+    while (1) {
+        internal_event_producers->feed_dispatcher(*internal_event_dispatcher,
+                                                  true);
+
+        internal_event_dispatcher->dispatch();
+    }
+}
+
+void Engine::receive_external_events() {
+    event_producers->feed_dispatcher(*event_dispatcher, false);
+}
+
+void Engine::dispatch_external_events() { event_dispatcher->dispatch(); }
+
+void Engine::handle_external_events() {
+    receive_external_events();
+    dispatch_external_events();
+}
+
+/** Feeds engine with TICK each 16ms (todo: make it configurable, dependent on
+ * vsync etc) */
+std::size_t Engine::feed_dispatcher(EventDispatcher &disp, bool can_block) {
+    constexpr auto TICK_DELAY = std::chrono::milliseconds(16);
+    constexpr std::size_t MAX_CONSECUTIVE_TICKS = 32;
+
+    auto cur_time = std::chrono::steady_clock::now();
+    auto time_delta = cur_time - tick_start_time;
+
+    if (time_delta >= TICK_DELAY) {
+        std::size_t n_ticks = std::min(std::size_t(time_delta / TICK_DELAY),
+                                       MAX_CONSECUTIVE_TICKS);
+        auto event = std::make_shared<Event>(engine_events::TICK);
+        for (auto i = 0; i < n_ticks; i++)
+            disp.queue_last(event);
+
+        tick_start_time = cur_time;
+        return n_ticks;
+    } else if (can_block) {
+        std::this_thread::sleep_for(TICK_DELAY - time_delta);
+        disp.queue_last(std::make_shared<Event>(engine_events::TICK));
+        tick_start_time += TICK_DELAY;
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
 } // namespace plane_quest::engine
