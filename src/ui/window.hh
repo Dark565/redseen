@@ -6,8 +6,10 @@
 #include <memory>
 #include <chrono>
 
-#include "engine/event_loop.hh"
+#include "engine/event_dispatcher.hh"
 #include "render/opengl_drawer.hh"
+
+#include "engine/event_producer.hh"
 
 struct GLFWwindow;
 
@@ -27,7 +29,8 @@ struct WindowConfig {
 
 class WindowImpl;
 
-class Window : std::enable_shared_from_this<Window> {
+class Window : public engine::EventProducer,
+               public std::enable_shared_from_this<Window> {
   public:
     Window(const WindowConfig &conf);
     ~Window();
@@ -42,15 +45,8 @@ class Window : std::enable_shared_from_this<Window> {
     const std::shared_ptr<render::OpenGLDrawer> &getDrawer() const;
     void *getNativeHandle() const;
 
-    std::optional<engine::EventLoopStatusPair>
-    pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-              const std::chrono::microseconds &timeout);
-
-    std::optional<engine::EventLoopStatusPair>
-    pullEvent(const std::shared_ptr<WindowEventLoop> &el);
-    class EventLoopNotAttachedError : public std::logic_error {
-        using std::logic_error::logic_error;
-    };
+    std::size_t feed_dispatcher(engine::EventDispatcher &,
+                                bool can_block) override;
 
   private:
     std::unique_ptr<WindowImpl> impl; // Use unique_ptr for PIMPL

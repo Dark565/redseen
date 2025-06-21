@@ -1,17 +1,14 @@
 #pragma once
 
 #include <memory>
-#include <optional>
-#include <chrono>
 #include <GLFW/glfw3.h>
 
-#include "engine/event_loop.hh"
+#include "engine/event_dispatcher.hh"
 #include "render/opengl_drawer.hh"
 #include "window.hh"
 
 namespace plane_quest::ui {
 
-class WindowEventLoop;
 class WindowImpl {
   public:
     WindowImpl(const WindowConfig &conf);
@@ -22,20 +19,15 @@ class WindowImpl {
     const std::shared_ptr<render::OpenGLDrawer> &getDrawer() const;
     void *getNativeHandle() const;
 
-    std::optional<engine::EventLoopStatusPair>
-    pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-              const std::chrono::microseconds &timeout);
-
-    std::optional<engine::EventLoopStatusPair>
-    pullEvent(const std::shared_ptr<WindowEventLoop> &el);
+    std::size_t feed_dispatcher(engine::EventDispatcher &, bool can_block);
 
   private:
     GLFWwindow *window = nullptr;
     std::shared_ptr<render::OpenGLDrawer> drawer;
     bool visible;
 
-    std::shared_ptr<WindowEventLoop> pending_event_loop;
-    std::optional<engine::EventLoopStatusPair> event_loop_status;
+    engine::EventDispatcher *pending_dispatcher = nullptr;
+    std::size_t n_queued = 0;
 
     void init_callbacks();
 

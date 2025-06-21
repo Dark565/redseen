@@ -1,5 +1,5 @@
+#include "engine/event_dispatcher.hh"
 #include "window_impl.hh"
-#include "engine/event_loop.hh"
 
 #include <endian.h>
 #include <stdexcept>
@@ -11,7 +11,6 @@
 #include "render/drawer.hh"
 
 #include "ui/window_event.hh"
-#include "ui/window_event_loop.hh"
 
 namespace plane_quest::ui {
 
@@ -27,15 +26,9 @@ const std::shared_ptr<render::OpenGLDrawer> &Window::getDrawer() const {
 }
 void *Window::getNativeHandle() const { return impl->getNativeHandle(); }
 
-std::optional<engine::EventLoopStatusPair>
-Window::pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-                  const std::chrono::microseconds &timeout) {
-    return impl->pullEvent(el, timeout);
-}
-
-std::optional<engine::EventLoopStatusPair>
-Window::pullEvent(const std::shared_ptr<WindowEventLoop> &el) {
-    return impl->pullEvent(el);
+std::size_t Window::feed_dispatcher(engine::EventDispatcher &disp,
+                                    bool can_block) {
+    return impl->feed_dispatcher(disp, can_block);
 }
 
 void WindowImpl::init_callbacks() {
@@ -50,8 +43,8 @@ void WindowImpl::glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
 
     auto impl = static_cast<WindowImpl *>(glfwGetWindowUserPointer(window));
 
-    auto el = impl->pending_event_loop.get();
-    if (el == nullptr)
+    auto disp = impl->pending_dispatcher;
+    if (disp == nullptr)
         return;
 
     window_event::Action ev_action;
@@ -66,16 +59,18 @@ void WindowImpl::glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
         break;
     }
 
-    window_event::Key event = {key, ev_action};
-    impl->event_loop_status = el->pass_event(event);
+    auto event = std::make_shared<window_event::WindowEvent>(key, ev_action);
+    disp->queue_last(std::move(event));
+
+    impl->n_queued++;
 }
 
 void WindowImpl::glfw_ev_mouse_button_callback(GLFWwindow *window, int button,
                                                int action, int mods) {
     auto impl = static_cast<WindowImpl *>(glfwGetWindowUserPointer(window));
 
-    auto el = impl->pending_event_loop.get();
-    if (el == nullptr)
+    auto disp = impl->pending_dispatcher;
+    if (disp == nullptr)
         return;
 
     window_event::Action ev_action;
@@ -104,23 +99,24 @@ void WindowImpl::glfw_ev_mouse_button_callback(GLFWwindow *window, int button,
         break;
     }
 
-    window_event::MouseButtonClick event = {ev_button, ev_action};
-
-    impl->event_loop_status = el->pass_event(event);
+    auto event =
+        std::make_shared<window_event::MouseButtonClick>(ev_button, ev_action);
+    disp->queue_last(std::move(event));
+    impl->n_queued++;
 }
 
 void WindowImpl::glfw_ev_cursor_position_callback(GLFWwindow *window,
                                                   double xpos, double ypos) {
     auto impl = static_cast<WindowImpl *>(glfwGetWindowUserPointer(window));
 
-    auto el = impl->pending_event_loop.get();
-    if (el == nullptr)
+    auto disp = impl->pending_dispatcher;
+    if (disp == nullptr)
         return;
 
-    window_event::MouseMoveEvent event = {static_cast<std::size_t>(xpos),
-                                          static_cast<std::size_t>(ypos)};
-
-    impl->event_loop_status = el->pass_event(event);
+    auto event = std::make_shared<window_event::MouseMoveEvent>(
+        static_cast<std::size_t>(xpos), static_cast<std::size_t>(ypos));
+    disp->queue_last(std::move(event));
+    impl->n_queued++;
 }
 
 WindowImpl::WindowImpl(const WindowConfig &conf) {
@@ -169,24 +165,17 @@ const std::shared_ptr<render::OpenGLDrawer> &WindowImpl::getDrawer() const {
 
 void *WindowImpl::getNativeHandle() const { return window; }
 
-std::optional<engine::EventLoopStatusPair>
-WindowImpl::pullEvent(const std::shared_ptr<WindowEventLoop> &el,
-                      const std::chrono::microseconds &timeout) {
-    double timeout_sec = std::chrono::duration<double>(timeout).count();
-    this->pending_event_loop = el;
-    this->event_loop_status = std::nullopt;
-    glfwWaitEventsTimeout(timeout_sec);
-    this->pending_event_loop = nullptr;
-    return this->event_loop_status;
-}
+std::size_t WindowImpl::feed_dispatcher(engine::EventDispatcher &disp,
+                                        bool can_block) {
+    pending_dispatcher = &disp;
+    n_queued = 0;
+    if (can_block)
+        glfwWaitEvents();
+    else
+        glfwPollEvents();
 
-std::optional<engine::EventLoopStatusPair>
-WindowImpl::pullEvent(const std::shared_ptr<WindowEventLoop> &el) {
-    this->pending_event_loop = el;
-    this->event_loop_status = std::nullopt;
-    glfwWaitEvents();
-    this->pending_event_loop = nullptr;
-    return this->event_loop_status;
+    this->pending_dispatcher = nullptr;
+    return n_queued;
 }
 
 } // namespace plane_quest::ui
