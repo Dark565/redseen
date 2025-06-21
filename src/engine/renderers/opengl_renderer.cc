@@ -37,7 +37,9 @@ void OpenGLRenderer::present() { ogl_drawer->present(); }
 bool OpenGLRenderer::render(const render::Model &model,
                             const glm::mat4 &transform) {
 
-    model.render(*mesh_renderer, transform);
+    model.render(*mesh_renderer,
+                 engine->get_player_camera().getProjectionMatrix(), transform);
+
     return true;
 }
 

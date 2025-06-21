@@ -4,16 +4,21 @@
 namespace plane_quest::engine {
 
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, float yaw,
-               float pitch)
-    : position(position), worldUp(up), yaw(yaw), pitch(pitch) {
+               float pitch, float aspectRatio)
+    : position(position), worldUp(up), yaw(yaw), pitch(pitch),
+      aspectRatio(aspectRatio) {
     updateCameraVectors();
 }
 
 glm::mat4 Camera::getViewMatrix() const { return view; }
 
-glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
+glm::mat4 Camera::getProjectionMatrix() const {
     return glm::perspective(glm::radians(fov), aspectRatio, nearPlane,
                             farPlane);
+}
+
+void Camera::setAspectRatio(float aspectRatio) {
+    this->aspectRatio = aspectRatio;
 }
 
 void Camera::setPosition(const glm::vec3 &newPosition) {

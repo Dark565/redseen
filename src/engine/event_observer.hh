@@ -5,9 +5,7 @@ struct Event;
 
 enum class ObserverReturnSignal {
     CONTINUE,
-    BREAK,
-    END_EVENT_LOOP,
-    RESTART_EVENT_LOOP
+    DROP_EVENT,
 };
 
 class EventObserver {

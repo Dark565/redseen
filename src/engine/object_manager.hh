@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "engine/event.hh"
+#include "event_dispatcher.hh"
 #include "event_observer.hh"
 
 namespace plane_quest::engine {
@@ -18,8 +19,9 @@ class Object;
 /** Class encapsulating object creation */
 class ObjectManager : public EventObserver {
     using SharedObjectPtr = std::shared_ptr<Object>;
+    using ObjectMap = std::unordered_map<std::string, SharedObjectPtr>;
 
-    std::unordered_map<std::string, SharedObjectPtr> obj_map;
+    ObjectMap obj_map;
     std::shared_ptr<Engine> engine;
 
   public:
@@ -37,14 +39,22 @@ class ObjectManager : public EventObserver {
         return shared_obj;
     }
 
+    /** Get begin and end iterators for objects */
+    std::pair<ObjectMap::const_iterator, ObjectMap::const_iterator>
+    get_objects() const;
+
     class ObjectManagerException : public std::logic_error {
       public:
         ObjectManagerException(const char *what) : std::logic_error(what) {}
     };
 
-    /** For EventObserver. Receives TICK events and calls
-     .update() and .render() for all objects. */
     ObserverReturnSignal on_event(const Event &event) override;
+
+    static void subscribe_dispatcher(std::weak_ptr<ObjectManager> _this,
+                                     EventDispatcher &disp);
+
+  protected:
+    void update();
 
   private:
     bool add_object(const std::string_view &key,

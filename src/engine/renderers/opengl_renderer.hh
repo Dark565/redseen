@@ -30,8 +30,8 @@ class OpenGLRenderer : public engine::Renderer {
     ObserverReturnSignal on_event(const Event &ev) override;
 
     void init() override;
-    bool post_render() override;
-    void present() override;
+    bool post_render();
+    void present();
 
     bool render(const render::Model &, const glm::mat4 &transform);
 

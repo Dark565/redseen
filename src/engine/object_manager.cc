@@ -1,4 +1,5 @@
 #include "object_manager.hh"
+#include "engine/event_dispatcher.hh"
 #include "object/object.hh"
 #include "engine/event_observer.hh"
 #include "engine/engine.hh"
@@ -20,9 +21,24 @@ bool ObjectManager::remove_object(const std::string_view &view) {
 }
 
 ObserverReturnSignal ObjectManager::on_event(const Event &event) {
-    if (!event.has_name(engine_events::TICK))
+    if (!event.has_name(engine_events::UPDATE))
         return ObserverReturnSignal::CONTINUE;
 
+    update();
+
+    engine->get_internal_event_dispatcher()->queue_event(
+        std::make_shared<Event>(engine_events::OBJECT_UPDATE_DONE));
+
+    return ObserverReturnSignal::CONTINUE;
+}
+
+std::pair<ObjectManager::ObjectMap::const_iterator,
+          ObjectManager::ObjectMap::const_iterator>
+ObjectManager::get_objects() const {
+    return std::make_pair(obj_map.cbegin(), obj_map.cend());
+}
+
+void ObjectManager::update() {
     for (const auto &object_pair : obj_map) {
         ObjectUpdateResult result = object_pair.second->update(*engine);
         switch (result) {
@@ -31,10 +47,14 @@ ObserverReturnSignal ObjectManager::on_event(const Event &event) {
             break;
         default:;
         }
-        object_pair.second->render(*engine);
     }
+}
 
-    return ObserverReturnSignal::CONTINUE;
+void ObjectManager::subscribe_dispatcher(std::weak_ptr<ObjectManager> _this,
+                                         EventDispatcher &disp) {
+    disp.register_observer("engine.object_manager", engine_events::UPDATE, 0,
+                           std::size_t(PipelinePriority::OBJECT_MANAGER),
+                           _this);
 }
 
 } // namespace plane_quest::engine

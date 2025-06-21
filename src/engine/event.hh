@@ -8,13 +8,14 @@ namespace plane_quest::engine {
 
 /** Base class for events */
 struct Event {
-    std::string_view name;
+    using Key = std::string;
+    using KeyView = std::string_view;
 
-    Event(const std::string_view &name) : name(name) {}
+    KeyView name;
 
-    bool has_name(const std::string_view &name) const {
-        return this->name == name;
-    }
+    Event(const KeyView &name) : name(name) {}
+
+    bool has_name(const KeyView &name) const { return this->name == name; }
 
     virtual ~Event() = default;
 };
