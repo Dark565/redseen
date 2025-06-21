@@ -26,7 +26,7 @@ ObserverReturnSignal ObjectManager::on_event(const Event &event) {
 
     update();
 
-    engine->get_internal_event_dispatcher()->queue_event(
+    engine->get_internal_event_dispatcher()->queue_next(
         std::make_shared<Event>(engine_events::OBJECT_UPDATE_DONE));
 
     return ObserverReturnSignal::CONTINUE;

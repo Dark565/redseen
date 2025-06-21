@@ -26,11 +26,11 @@ ObserverReturnSignal Renderer::on_event(const Event &ev) {
     auto &int_disp = *engine->get_internal_event_dispatcher();
     if (ev.has_name(engine_events::UPDATE)) {
         update();
-        int_disp.queue_last(
+        int_disp.queue_next(
             std::make_unique<Event>(engine_events::RENDER_UPDATE_DONE));
     } else if (ev.has_name(engine_events::RENDER)) {
         render();
-        int_disp.queue_last(
+        int_disp.queue_next(
             std::make_unique<Event>(engine_events::RENDER_DONE));
     } else if (ev.has_name(engine_events::PRESENT)) {
         present();
