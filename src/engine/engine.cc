@@ -15,6 +15,7 @@ namespace plane_quest::engine {
 
 class EventLoop;
 
+#if 0
 class Engine::FrameState::Start : public Engine::FrameState {
   public:
     Start(Engine &engine)
@@ -74,6 +75,8 @@ void Engine::FrameState::WaitingForRender::take_event(const Event &ev) {
     engine.frame_state =
         std::unique_ptr<FrameState>(new Engine::FrameState::Start(engine));
 }
+
+#endif
 
 const std::shared_ptr<TextureManager> &Engine::get_texture_manager() const {
     return texture_manager;
@@ -159,12 +162,27 @@ std::shared_ptr<Engine> Engine::create() {
 }
 
 ObserverReturnSignal Engine::on_event(const Event &ev) {
+#if 0
     if (ev.has_name(engine_events::UPDATE)) {
         handle_external_events();
     }
 
     frame_state->take_event(ev);
+#endif
+
+    if (!ev.has_name(engine_events::TICK))
+        return ObserverReturnSignal::CONTINUE;
+
+    handle_frame();
     return ObserverReturnSignal::CONTINUE;
+}
+
+void Engine::handle_frame() {
+    object_manager->update();
+    renderer->update();
+    handle_external_events();
+    renderer->render();
+    renderer->present();
 }
 
 static bool is_engine_event(const Event &ev) {
@@ -181,7 +199,9 @@ void Engine::subscribe_dispatcher(EventDispatcher &disp) {
 }
 
 void Engine::reset_frame_state() {
+#if 0
     frame_state = std::make_unique<Engine::FrameState::Start>(*this);
+#endif
 }
 
 void Engine::internal_dispatch_loop() {

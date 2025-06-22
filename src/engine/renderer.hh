@@ -54,6 +54,8 @@ class Renderer : public EventObserver {
     and renders them */
     virtual void render();
     virtual void present() = 0;
+
+    friend class Engine;
 };
 
 } // namespace plane_quest::engine

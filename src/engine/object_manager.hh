@@ -61,6 +61,8 @@ class ObjectManager : public EventObserver {
                     const SharedObjectPtr &shared_ptr);
 
     bool remove_object(const std::string_view &key);
+
+    friend class Engine;
 };
 
 } // namespace plane_quest::engine

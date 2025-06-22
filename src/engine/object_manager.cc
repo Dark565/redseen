@@ -60,9 +60,11 @@ void ObjectManager::update() {
 
 void ObjectManager::subscribe_dispatcher(std::weak_ptr<ObjectManager> _this,
                                          EventDispatcher &disp) {
+#if 0
     disp.register_observer("engine.object_manager", engine_events::UPDATE, 0,
                            std::size_t(PipelinePriority::OBJECT_MANAGER),
                            _this);
+#endif
 }
 
 } // namespace plane_quest::engine

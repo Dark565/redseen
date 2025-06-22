@@ -90,6 +90,8 @@ class Engine : NonCopyable,
     void dispatch_external_events();
     void handle_external_events();
 
+    void handle_frame();
+
   public:
     static std::shared_ptr<Engine> create();
 

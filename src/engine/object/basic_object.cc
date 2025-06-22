@@ -49,9 +49,11 @@ ObjectUpdateResult BasicObject::update(Engine &engine) {
 }
 
 bool BasicObject::render(Engine &engine) {
-    std::cout << "Rendering "
+#ifdef DEBUG
+    std::cerr << "Rendering "
               << abi::__cxa_demangle(typeid(*this).name(), nullptr, 0, nullptr)
               << std::endl;
+#endif
     return engine.get_renderer()->render({*get_model(), get_transform()});
 }
 
