@@ -21,7 +21,7 @@ void OpenGLRenderer::init() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void OpenGLRenderer::update() { glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); }
+void OpenGLRenderer::update() { ogl_drawer->clear(0, 0, 0); }
 
 void OpenGLRenderer::present() { ogl_drawer->present(); }
 

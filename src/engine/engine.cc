@@ -178,6 +178,10 @@ ObserverReturnSignal Engine::on_event(const Event &ev) {
 }
 
 void Engine::handle_frame() {
+#ifdef DEBUG
+    std::cerr << "---- Engine::handle_frame(): called ---" << std::endl;
+#endif
+
     object_manager->update();
     renderer->update();
     handle_external_events();
