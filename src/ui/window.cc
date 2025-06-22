@@ -59,7 +59,7 @@ void WindowImpl::glfw_ev_key_callback(GLFWwindow *window, int key, int scancode,
         break;
     }
 
-    auto event = std::make_shared<window_event::WindowEvent>(key, ev_action);
+    auto event = std::make_shared<window_event::Key>(key, ev_action);
     disp->queue_last(std::move(event));
 
     impl->n_queued++;
