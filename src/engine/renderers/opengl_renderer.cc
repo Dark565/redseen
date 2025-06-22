@@ -26,10 +26,12 @@ void OpenGLRenderer::update() { ogl_drawer->clear(0, 0, 0); }
 void OpenGLRenderer::present() { ogl_drawer->present(); }
 
 bool OpenGLRenderer::render(const render::Model &model,
-                            const glm::mat4 &transform) {
+                            const glm::mat4 &transform,
+                            const glm::vec3 &lightPos) {
 
     model.render(*mesh_renderer,
-                 engine->get_player_camera().getProjectionMatrix(), transform);
+                 engine->get_player_camera().getProjectionMatrix(), transform,
+                 lightPos);
 
     return true;
 }

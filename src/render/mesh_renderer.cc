@@ -16,7 +16,10 @@ MeshRenderer::~MeshRenderer() = default;
 
 void MeshRenderer::render(const OpenGLMeshHandle &mesh,
                           const glm::mat4 &projection, const glm::mat4 &model,
-                          const glm::vec3 &color, unsigned int textureID) {
+                          const glm::vec3 &color, unsigned int textureID,
+                          const glm::vec3 &lightPosition) {
+    // TODO: Expand lightning implementation
+
     shader->use();
 
     // Set uniforms
@@ -30,6 +33,18 @@ void MeshRenderer::render(const OpenGLMeshHandle &mesh,
     // Bind texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
+    glUniform1i(glGetUniformLocation(shader->ID, "meshTextures"), 0);
+
+    // Lightning
+    glUniform3f(glGetUniformLocation(shader->ID, "lightPosition"),
+                lightPosition.x, lightPosition.y, lightPosition.z);
+    // TODO: Make it not hardcoded
+    glUniform3f(glGetUniformLocation(shader->ID, "lightColor"), 1.0, 1.0, 1.0);
+    glUniform3f(glGetUniformLocation(shader->ID, "ambientColor"), 0.3, 0.3,
+                0.3);
+    glUniform1f(glGetUniformLocation(shader->ID, "Kc"), 1.0);
+    glUniform1f(glGetUniformLocation(shader->ID, "K1"), 0.09f);
+    glUniform1f(glGetUniformLocation(shader->ID, "Kq"), 0.032f);
 
     // Bind mesh and draw
     glBindVertexArray(mesh.get_vao());

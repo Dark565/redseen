@@ -28,7 +28,7 @@ class BasicObject : public Object {
     void set_pos(const Position3f &pos) override;
 
     ObjectUpdateResult update(Engine &) override;
-    bool render(Engine &) override;
+    bool render(Engine &, const glm::vec3 &lightPos) override;
 };
 
 } // namespace plane_quest::engine

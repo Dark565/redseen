@@ -33,7 +33,8 @@ class Model {
 
     // Renders the model using the given renderer and parent/world transform
     void render(MeshRenderer &renderer, const glm::mat4 &projection,
-                const glm::mat4 &parentTransform = glm::mat4(1.0f)) const;
+                const glm::mat4 &parentTransform,
+                const glm::vec3 &lightPos) const;
 
   private:
     std::shared_ptr<OpenGLMeshHandle> mesh_;

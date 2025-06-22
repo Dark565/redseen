@@ -13,6 +13,7 @@
 #include "engine/model.hh"
 #include "engine/geometry.hh"
 #include "engine/object/object.hh"
+#include "engine/renderer.hh"
 #include "render/model.hh"
 
 namespace plane_quest::engine {
@@ -48,13 +49,14 @@ ObjectUpdateResult BasicObject::update(Engine &engine) {
     return ObjectUpdateResult::NORMAL;
 }
 
-bool BasicObject::render(Engine &engine) {
+bool BasicObject::render(Engine &engine, const glm::vec3 &lightPos) {
 #ifdef DEBUG
     std::cerr << "Rendering "
               << abi::__cxa_demangle(typeid(*this).name(), nullptr, 0, nullptr)
               << std::endl;
 #endif
-    return engine.get_renderer()->render({*get_model(), get_transform()});
+    return engine.get_renderer()->render(
+        {*get_model(), get_transform(), lightPos});
 }
 
 } // namespace plane_quest::engine

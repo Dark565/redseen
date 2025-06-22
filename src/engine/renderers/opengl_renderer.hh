@@ -31,7 +31,8 @@ class OpenGLRenderer : public engine::Renderer {
     void update() override;
     void present() override;
 
-    bool render(const render::Model &, const glm::mat4 &transform);
+    bool render(const render::Model &, const glm::mat4 &transform,
+                const glm::vec3 &lightPos);
 
     const std::unique_ptr<render::MeshRenderer> &get_mesh_renderer() const;
 };

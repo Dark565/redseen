@@ -12,7 +12,7 @@ bool OpenGLModel::render(Renderer &renderer, const RenderRequest &req,
         throw Renderer::IncompatibleRendererError(
             "OpenGLModel can only be rendered with OpenGLRenderer");
 
-    return ogl_renderer->render(*model, view * req.transform);
+    return ogl_renderer->render(*model, view * req.transform, req.lightPos);
 }
 
 } // namespace plane_quest::engine::model

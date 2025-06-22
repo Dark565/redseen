@@ -49,12 +49,14 @@ void Renderer::render() {
     auto &om = *engine->get_object_manager();
     auto [obj_beg, obj_end] = om.get_objects();
 
+    auto camera_pos = engine->get_player_camera().getPosition();
+
     for (auto iter = obj_beg; iter != obj_end; iter++) {
 #if DEBUG
         std::cerr << "Renderer::render(): rendering '" << iter->first << "'"
                   << std::endl;
 #endif
-        iter->second->render(*engine);
+        iter->second->render(*engine, camera_pos);
         // TODO: do render of obj
     }
 }

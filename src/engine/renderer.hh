@@ -21,8 +21,10 @@ class EventDispatcher;
 struct RenderRequest {
     const Model &model;
     glm::mat4 transform;
+    glm::vec3 lightPos;
 
-    RenderRequest(const Model &model, const glm::mat4 &transform)
+    RenderRequest(const Model &model, const glm::mat4 &transform,
+                  const glm::vec3 &lightPos)
         : model(model), transform(transform) {}
 
     virtual ~RenderRequest() = default;

@@ -28,7 +28,7 @@ class Object {
     virtual ObjectUpdateResult update(Engine &) = 0;
 
     /** Render the object. Called by Renderer. */
-    virtual bool render(Engine &) = 0;
+    virtual bool render(Engine &, const glm::vec3 &lightPos) = 0;
 
     friend class ObjectManager;
 };
