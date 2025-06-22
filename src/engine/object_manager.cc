@@ -1,4 +1,9 @@
 #include "object_manager.hh"
+
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 #include "engine/event_dispatcher.hh"
 #include "object/object.hh"
 #include "engine/event_observer.hh"
@@ -39,6 +44,9 @@ ObjectManager::get_objects() const {
 }
 
 void ObjectManager::update() {
+#ifdef DEBUG
+    std::cerr << "ObjetManager: update()" << std::endl;
+#endif
     for (const auto &object_pair : obj_map) {
         ObjectUpdateResult result = object_pair.second->update(*engine);
         switch (result) {

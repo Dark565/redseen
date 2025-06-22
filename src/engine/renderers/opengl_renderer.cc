@@ -15,23 +15,14 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Engine> engine,
     : Renderer(engine), ogl_drawer(ogl_drawer),
       mesh_renderer(std::make_unique<render::MeshRenderer>()) {}
 
-ObserverReturnSignal OpenGLRenderer::on_event(const Event &ev) {
-    if (!ev.has_name(engine_events::TICK))
-        return ObserverReturnSignal::CONTINUE;
-
-    post_render();
-    present();
-
-    return ObserverReturnSignal::CONTINUE;
-}
-
 void OpenGLRenderer::init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-bool OpenGLRenderer::post_render() { return true; }
+void OpenGLRenderer::update() { glClear(GL_COLOR_BUFFER_BIT); }
+
 void OpenGLRenderer::present() { ogl_drawer->present(); }
 
 bool OpenGLRenderer::render(const render::Model &model,

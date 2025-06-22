@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 #include <cstdlib>
 #include <string_view>
 #include <glm/glm.hpp>
@@ -13,7 +17,11 @@ struct Event {
 
     KeyView name;
 
-    Event(const KeyView &name) : name(name) {}
+    Event(const KeyView &name) : name(name) {
+#ifdef DEBUG
+        std::cerr << "Creating event: " << name << std::endl;
+#endif
+    }
 
     bool has_name(const KeyView &name) const { return this->name == name; }
 

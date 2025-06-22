@@ -96,6 +96,16 @@ Engine::get_internal_event_dispatcher() const {
     return internal_event_dispatcher;
 }
 
+const std::unique_ptr<EventProducerContainer> &
+Engine::get_event_producer_container() const {
+    return event_producers;
+}
+
+const std::unique_ptr<EventProducerContainer> &
+Engine::get_internal_event_producer_container() const {
+    return internal_event_producers;
+}
+
 void Engine::set_renderer(const std::shared_ptr<Renderer> &renderer) {
     this->renderer = renderer;
 }
@@ -115,6 +125,7 @@ void Engine::init() {
     event_dispatcher = std::make_unique<EventDispatcher>();
     internal_event_dispatcher = std::make_unique<EventDispatcher>();
     event_producers = std::make_unique<EventProducerContainer>();
+    internal_event_producers = std::make_unique<EventProducerContainer>();
     object_manager = std::make_shared<ObjectManager>(shared_from_this());
     texture_manager = std::make_shared<TextureManager>();
 }
@@ -123,6 +134,7 @@ bool Engine::run() {
     bool ret;
 
     get_renderer()->init();
+    reset_frame_state();
 
     subscribe_dispatcher(*internal_event_dispatcher);
     get_renderer()->subscribe_dispatcher(get_renderer(),
@@ -147,6 +159,10 @@ std::shared_ptr<Engine> Engine::create() {
 }
 
 ObserverReturnSignal Engine::on_event(const Event &ev) {
+    if (ev.has_name(engine_events::UPDATE)) {
+        handle_external_events();
+    }
+
     frame_state->take_event(ev);
     return ObserverReturnSignal::CONTINUE;
 }
@@ -157,11 +173,16 @@ static bool is_engine_event(const Event &ev) {
 
 void Engine::subscribe_dispatcher(EventDispatcher &disp) {
     internal_event_dispatcher->register_observer(
-        "engine.engine", {engine_events::TICK, engine_events::RENDER_DONE}, 0,
-        std::size_t(PipelinePriority::ENGINE), weak_from_this());
+        "engine.engine",
+        {engine_events::TICK, engine_events::OBJECT_UPDATE_DONE,
+         engine_events::RENDER_UPDATE_DONE, engine_events::RENDER_DONE,
+         engine_events::UPDATE},
+        0, std::size_t(PipelinePriority::ENGINE), weak_from_this());
 }
 
-void Engine::reset_frame_state() {}
+void Engine::reset_frame_state() {
+    frame_state = std::make_unique<Engine::FrameState::Start>(*this);
+}
 
 void Engine::internal_dispatch_loop() {
     while (1) {

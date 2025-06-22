@@ -27,11 +27,9 @@ class OpenGLRenderer : public engine::Renderer {
     OpenGLRenderer(std::shared_ptr<Engine>,
                    std::shared_ptr<render::OpenGLDrawer>);
 
-    ObserverReturnSignal on_event(const Event &ev) override;
-
     void init() override;
-    bool post_render();
-    void present();
+    void update() override;
+    void present() override;
 
     bool render(const render::Model &, const glm::mat4 &transform);
 

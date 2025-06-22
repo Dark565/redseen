@@ -98,6 +98,12 @@ class Engine : NonCopyable,
     const std::unique_ptr<EventDispatcher> &get_event_dispatcher() const;
     const std::unique_ptr<EventDispatcher> &
     get_internal_event_dispatcher() const;
+
+    const std::unique_ptr<EventProducerContainer> &
+    get_internal_event_producer_container() const;
+    const std::unique_ptr<EventProducerContainer> &
+    get_event_producer_container() const;
+
     const std::shared_ptr<TextureManager> &get_texture_manager() const;
     const std::shared_ptr<ObjectManager> &get_object_manager() const;
     const std::shared_ptr<Renderer> &get_renderer() const;

@@ -35,7 +35,9 @@ class Renderer : public EventObserver {
   public:
     Renderer(std::shared_ptr<Engine> engine);
 
-    virtual void init();
+    virtual ~Renderer();
+
+    virtual void init() = 0;
 
     bool render(const RenderRequest &);
     ObserverReturnSignal on_event(const Event &) override;

@@ -1,6 +1,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <iostream>
 #include "event_dispatcher.hh"
 #include "engine/event_observer.hh"
 
@@ -74,9 +75,17 @@ void EventDispatcher::drop_queue() { event_queue = {}; }
 std::size_t EventDispatcher::dispatch(std::size_t n) {
     std::size_t n_dispatched = 0;
 
+#ifdef DEBUG
+    std::cerr << "EventDispatcher::dispatch() Events to dispatch: "
+              << event_queue.size() << std::endl;
+#endif
+
     while (!event_queue.empty()) {
         auto front_ev = std::move(event_queue.front());
         event_queue.pop_front();
+#ifdef DEBUG
+        std::cerr << "Dispatching: " << front_ev->name << std::endl;
+#endif
         dispatch_event(*front_ev);
         n_dispatched++;
     }
@@ -110,6 +119,13 @@ bool EventDispatcher::has_priority_set(const Event::KeyView &event_name) {
 
 EventDispatcher::ObserverPrioSet &
 EventDispatcher::get_priority_set(const Event::KeyView &event_name) {
+#ifdef DEBUG
+    // std::cerr << "EventDispatcher::get_priority_set: Event sets: ";
+    // for (const auto &pair : event_observer_map) {
+    //     std::cerr << pair.first << ", ";
+    // }
+    // std::cerr << std::endl;
+#endif
     return event_observer_map[std::string(event_name)];
 }
 
@@ -140,6 +156,10 @@ EventDispatcherStatusPair EventDispatcher::dispatch_event_to_observer(
     const Event &ev) {
     auto shared_p = observer_iter->observer.lock();
     if (shared_p != nullptr) {
+#ifdef DEBUG
+        std::cerr << "EventDispatcher: Sending event '" << ev.name << "' to "
+                  << observer_iter->name << std::endl;
+#endif
         return {true, shared_p->on_event(ev)};
     } else {
         // weak pointer to an observer is expired so remove it
@@ -151,12 +171,21 @@ EventDispatcherStatusPair EventDispatcher::dispatch_event_to_observer(
 
 bool EventDispatcher::dispatch_event(const Event &ev) {
 
-    if (has_priority_set(ev.name))
+#ifdef DEBUG
+    // std::cerr << "EventDispatcher::dispatch_event: pre check" << std::endl;
+#endif
+
+    if (!has_priority_set(ev.name))
         return false;
 
     bool any_notified = false;
-
     auto &prio_set = get_priority_set(ev.name);
+
+#ifdef DEBUG
+    std::cerr << "Observers in set for '" << ev.name << "': " << prio_set.size()
+              << std::endl;
+#endif
+
     for (auto iter = prio_set.cbegin(); iter != prio_set.cend(); iter++) {
         auto result = dispatch_event_to_observer(prio_set, iter, ev);
         if (result.first) {
