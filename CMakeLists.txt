@@ -27,7 +27,7 @@ target_precompile_headers(earcut INTERFACE "${CMAKE_SOURCE_DIR}/third_party/earc
 
 add_subdirectory(src)
 
-option(BUILT_DEMOS "Build demo applications" OFF)
+option(BUILD_DEMOS "Build demo applications" OFF)
 
 if(BUILD_DEMOS)
     add_subdirectory(demos)
