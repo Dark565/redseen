@@ -19,7 +19,7 @@
 
 #pragma once
 
-namespace plane_quest {
+namespace redseen {
 struct DefaultMove {
     DefaultMove(DefaultMove &&) = default;
     DefaultMove &operator=(DefaultMove &&) = default;
@@ -27,4 +27,4 @@ struct DefaultMove {
   protected:
     DefaultMove() = default;
 };
-} // namespace plane_quest
+} // namespace redseen

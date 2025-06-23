@@ -25,7 +25,7 @@
 #include "engine/object/object.hh"
 #include "model.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 Renderer::Renderer(std::shared_ptr<Engine> engine) : engine(engine) {}
 
@@ -80,4 +80,4 @@ void Renderer::render() {
     }
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

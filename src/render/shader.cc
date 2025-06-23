@@ -25,6 +25,8 @@
 
 #include <glad/glad.h>
 
+namespace redseen::render {
+
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     std::string vertexCode = readFile(vertexPath);
     std::string fragmentCode = readFile(fragmentPath);
@@ -93,3 +95,5 @@ void Shader::checkCompileErrors(GLuint shader, const std::string &type) const {
         }
     }
 }
+
+} // namespace redseen::render

@@ -23,7 +23,7 @@
 
 #include <type_traits>
 #include <utility>
-namespace plane_quest {
+namespace redseen {
 
 /** This class is used as an efficient alternative for RTTI dynamic_cast.
 Subclasses identify themselves by key which is hashed */
@@ -45,4 +45,4 @@ template <class Base, class Key = std::string_view> class DowncastHelper {
     }
 };
 
-} // namespace plane_quest
+} // namespace redseen

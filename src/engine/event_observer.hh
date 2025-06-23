@@ -18,7 +18,7 @@
  */
 
 #pragma once
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 struct Event;
 
@@ -32,4 +32,4 @@ class EventObserver {
     virtual ObserverReturnSignal on_event(const Event &) = 0;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

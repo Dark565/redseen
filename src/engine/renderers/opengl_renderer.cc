@@ -27,7 +27,7 @@
 
 #include <glad/glad.h>
 
-namespace plane_quest::engine::renderers {
+namespace redseen::engine::renderers {
 
 OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Engine> engine,
                                std::shared_ptr<render::OpenGLDrawer> ogl_drawer)
@@ -60,4 +60,4 @@ OpenGLRenderer::get_mesh_renderer() const {
     return mesh_renderer;
 }
 
-} // namespace plane_quest::engine::renderers
+} // namespace redseen::engine::renderers

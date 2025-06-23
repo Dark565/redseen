@@ -25,7 +25,7 @@
 #include <memory>
 #include <string>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class TextRenderer;
 
@@ -51,6 +51,6 @@ class Text {
     friend class TextRenderer;
 };
 
-} // namespace plane_quest::render
+} // namespace redseen::render
 
 #endif

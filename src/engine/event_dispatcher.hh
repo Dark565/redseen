@@ -32,7 +32,7 @@
 #include "event.hh"
 #include "event_observer.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Event;
 class Engine;
@@ -43,16 +43,16 @@ struct PriorityObserverKey {
     std::weak_ptr<EventObserver> observer;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine
 
-template <> struct std::less<plane_quest::engine::PriorityObserverKey> {
-    bool operator()(const plane_quest::engine::PriorityObserverKey &a,
-                    const plane_quest::engine::PriorityObserverKey &b) const {
+template <> struct std::less<redseen::engine::PriorityObserverKey> {
+    bool operator()(const redseen::engine::PriorityObserverKey &a,
+                    const redseen::engine::PriorityObserverKey &b) const {
         return std::less<decltype(a.prio)>{}(a.prio, b.prio);
     }
 };
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 using EventDispatcherStatusPair = std::pair<bool, ObserverReturnSignal>;
 
@@ -143,4 +143,4 @@ class EventDispatcher {
     // bool return_status(const EventDispatcherStatusPair &status);
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

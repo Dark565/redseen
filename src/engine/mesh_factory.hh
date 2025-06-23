@@ -22,7 +22,7 @@
 #include "render/mesh.hh"
 #include <memory>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class MeshFactory {
   public:
@@ -32,4 +32,4 @@ class MeshFactory {
     virtual std::unique_ptr<render::Mesh> create_mesh() = 0;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

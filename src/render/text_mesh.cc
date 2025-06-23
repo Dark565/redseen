@@ -26,7 +26,7 @@
 #include <glm/gtc/constants.hpp>
 #include <vector>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 // Callback structure to store decomposed outline
 struct OutlineDecomposer {
@@ -177,4 +177,4 @@ TextMeshFactory::fromString(const std::string &text,
     return std::make_unique<Mesh>(std::move(vertices), std::move(indices));
 }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

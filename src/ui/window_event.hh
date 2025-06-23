@@ -26,7 +26,7 @@
 
 #include "engine/event.hh"
 
-namespace plane_quest::ui {
+namespace redseen::ui {
 
 namespace window_event {
 
@@ -69,4 +69,4 @@ struct Key : WindowEvent {
 
 using window_event::WindowEvent;
 
-} // namespace plane_quest::ui
+} // namespace redseen::ui

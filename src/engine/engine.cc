@@ -30,7 +30,7 @@
 #include "engine/event_producer_container.hh"
 #include "engine/object/object.hh"
 #include "engine/texture_manager.hh"
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class EventLoop;
 
@@ -275,4 +275,4 @@ std::size_t Engine::feed_dispatcher(EventDispatcher &disp, bool can_block) {
     }
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

@@ -19,7 +19,7 @@
 
 #pragma once
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Drawer {
   public:
@@ -29,4 +29,4 @@ class Drawer {
     virtual void present() = 0;
 };
 
-} // namespace plane_quest::render
+} // namespace redseen::render

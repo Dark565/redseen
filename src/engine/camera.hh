@@ -22,7 +22,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Camera {
   public:
@@ -69,4 +69,4 @@ class Camera {
     float aspectRatio;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

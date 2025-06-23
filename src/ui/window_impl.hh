@@ -26,7 +26,7 @@
 #include "render/opengl_drawer.hh"
 #include "window.hh"
 
-namespace plane_quest::ui {
+namespace redseen::ui {
 
 class WindowImpl {
   public:
@@ -60,4 +60,4 @@ class WindowImpl {
                                                  double xpos, double ypos);
 };
 
-} // namespace plane_quest::ui
+} // namespace redseen::ui

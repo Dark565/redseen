@@ -20,7 +20,7 @@
 #include "texture_manager.hh"
 #include "texture_key.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 TextureManager::TextureManager() {}
 
@@ -37,4 +37,4 @@ bool TextureManager::set(const TextureKey &key, const SharedTexture &txt,
     return texture_map.emplace(std::make_pair(key, txt)).second;
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

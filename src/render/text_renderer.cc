@@ -23,7 +23,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 TextRenderer::TextRenderer() {
     // Create shader from embedded code
@@ -58,4 +58,4 @@ TextRenderer::createText(const std::shared_ptr<Font> &font) {
 
 void TextRenderer::setProjection(const glm::mat4 &proj) { projection = proj; }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

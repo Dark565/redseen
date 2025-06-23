@@ -20,7 +20,7 @@
 #ifndef TEXT_SHADERS_HH
 #define TEXT_SHADERS_HH
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 // Vertex shader for text rendering
 constexpr const char *TEXT_VERTEX_SHADER = R"(
@@ -53,6 +53,6 @@ void main() {
 }
 )";
 
-} // namespace plane_quest::render
+} // namespace redseen::render
 
 #endif // TEXT_SHADERS_HH

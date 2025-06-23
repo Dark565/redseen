@@ -21,7 +21,7 @@
 #include "shader.hh"
 #include <memory>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 void Model::render(MeshRenderer &renderer, const glm::mat4 &projection,
                    const glm::mat4 &parentTransform,
@@ -32,4 +32,4 @@ void Model::render(MeshRenderer &renderer, const glm::mat4 &projection,
                     lightPos);
 }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

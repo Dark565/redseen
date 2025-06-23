@@ -24,7 +24,7 @@
 #include "opengl_drawer.hh"
 #include "texture.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 OpenGLDrawer::OpenGLDrawer(int width, int height, GLFWwindow *window)
     : m_width(width), m_height(height), m_window(window) {
@@ -184,4 +184,4 @@ void OpenGLDrawer::present() { glfwSwapBuffers(m_window); }
 
 void *OpenGLDrawer::getWindowHandle() const { return m_window; }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

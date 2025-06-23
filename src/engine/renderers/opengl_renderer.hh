@@ -24,12 +24,12 @@
 #include "engine/renderer.hh"
 #include "engine/event_observer.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 class OpenGLDrawer;
 class MeshRenderer;
 class Model;
-} // namespace plane_quest::render
-namespace plane_quest::engine {
+} // namespace redseen::render
+namespace redseen::engine {
 class Event;
 
 namespace renderers {
@@ -57,4 +57,4 @@ class OpenGLRenderer : public engine::Renderer {
 };
 
 } // namespace renderers
-} // namespace plane_quest::engine
+} // namespace redseen::engine

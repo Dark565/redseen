@@ -31,7 +31,7 @@
 
 #include "ui/window_event.hh"
 
-namespace plane_quest::ui {
+namespace redseen::ui {
 
 Window::Window(const WindowConfig &conf)
     : impl(std::make_unique<WindowImpl>(conf)) {}
@@ -197,4 +197,4 @@ std::size_t WindowImpl::feed_dispatcher(engine::EventDispatcher &disp,
     return n_queued;
 }
 
-} // namespace plane_quest::ui
+} // namespace redseen::ui

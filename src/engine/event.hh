@@ -27,7 +27,7 @@
 #include <string_view>
 #include <glm/glm.hpp>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 /** Base class for events */
 struct Event {
@@ -49,4 +49,4 @@ struct Event {
 
 struct EngineEvent : Event {};
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

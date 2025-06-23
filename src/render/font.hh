@@ -17,16 +17,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef FONT_HH
-#define FONT_HH
+#pragma once
 
-#include <glm/glm.hpp>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 struct Character {
     unsigned int textureID;
@@ -59,6 +57,4 @@ class Font {
     std::unique_ptr<FontImpl> impl;
 };
 
-} // namespace plane_quest::render
-
-#endif
+} // namespace redseen::render

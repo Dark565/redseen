@@ -24,7 +24,7 @@
 #include "event_dispatcher.hh"
 #include "engine/event_observer.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Event;
 class Engine;
@@ -229,4 +229,4 @@ bool EventDispatcher::should_event_be_dropped(ObserverReturnSignal signal) {
     return signal == ObserverReturnSignal::DROP_EVENT;
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

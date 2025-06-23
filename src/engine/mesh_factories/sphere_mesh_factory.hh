@@ -21,7 +21,7 @@
 
 #include "engine/mesh_factory.hh"
 
-namespace plane_quest::engine::mesh_factories {
+namespace redseen::engine::mesh_factories {
 
 class Sphere : public MeshFactory {
   public:
@@ -37,4 +37,4 @@ class Sphere : public MeshFactory {
     int stacks;
 };
 
-} // namespace plane_quest::engine::mesh_factories
+} // namespace redseen::engine::mesh_factories

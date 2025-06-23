@@ -22,7 +22,7 @@
 #include <glm/glm.hpp>
 #include "renderer.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Renderer;
 
@@ -35,4 +35,4 @@ class Model {
                         const glm::mat4 &view) const = 0;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

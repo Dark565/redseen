@@ -20,7 +20,7 @@
 #include "sphere_mesh_factory.hh"
 #include <cmath>
 
-namespace plane_quest::engine::mesh_factories {
+namespace redseen::engine::mesh_factories {
 
 Sphere::Sphere(float radius, int sectors, int stacks)
     : radius(radius), sectors(sectors), stacks(stacks) {}
@@ -73,4 +73,4 @@ std::unique_ptr<render::Mesh> Sphere::create_mesh() {
                                           std::move(indices));
 }
 
-} // namespace plane_quest::engine::mesh_factories
+} // namespace redseen::engine::mesh_factories

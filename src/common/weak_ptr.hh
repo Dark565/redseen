@@ -21,7 +21,7 @@
 
 #include <memory>
 
-namespace plane_quest {
+namespace redseen {
 /** Augmented std::weak_ptr that supports hashing. */
 template <class T> class WeakPtr : public std::weak_ptr<T> {
     WeakPtr(const WeakPtr &) = default;
@@ -42,11 +42,11 @@ template <class T> class WeakPtr : public std::weak_ptr<T> {
         return *this;
     }
 };
-} // namespace plane_quest
+} // namespace redseen
 
-template <class T> class std::hash<plane_quest::WeakPtr<T>> {
+template <class T> class std::hash<redseen::WeakPtr<T>> {
   public:
-    std::size_t operator()(const plane_quest::WeakPtr<T> &wp) {
+    std::size_t operator()(const redseen::WeakPtr<T> &wp) {
         auto sp = wp.lock();
         return std::hash<T *>{}(sp.get());
     }

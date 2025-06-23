@@ -17,15 +17,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "font.hh"
+
+#include <iostream>
+#include <stdexcept>
+#include <unordered_map>
 #include <glad/glad.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_OUTLINE_H
-#include "font.hh"
-#include <iostream>
-#include <stdexcept>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Font::FontImpl {
   public:
@@ -136,7 +138,7 @@ class Font::FontImpl {
     FT_Library ft;
     FT_Face face;
     unsigned int fontSize;
-    std::map<char, Character> characters;
+    std::unordered_map<char, Character> characters;
 };
 
 Font::Font(const std::string &fontPath, unsigned int fontSize)
@@ -152,4 +154,4 @@ unsigned int Font::getFontSize() const { return impl->getFontSize(); }
 
 void *Font::getFTFace() const { return impl->getFTFace(); }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

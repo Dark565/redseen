@@ -23,10 +23,10 @@
 
 #include "texture_key.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 class Texture;
 }
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class TextureManager {
     using SharedTexture = std::shared_ptr<const render::Texture>;
@@ -49,4 +49,4 @@ class TextureManager {
     name already exists. */
     bool set(const TextureKey &, const SharedTexture &, bool replace = false);
 };
-} // namespace plane_quest::engine
+} // namespace redseen::engine

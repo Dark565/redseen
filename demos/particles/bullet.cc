@@ -30,7 +30,7 @@
 #include "engine/object/object.hh"
 #include "engine/object/basic_object.hh"
 
-namespace plane_quest::demos::particles {
+namespace redseen::demos::particles {
 
 Bullet::Bullet(const glm::vec3 &start_pos,
                std::shared_ptr<const engine::Model> model,
@@ -76,4 +76,4 @@ engine::ObjectUpdateResult Bullet::update(engine::Engine &engine) {
     return engine::ObjectUpdateResult::NORMAL;
 }
 
-} // namespace plane_quest::demos::particles
+} // namespace redseen::demos::particles

@@ -17,15 +17,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MESH_HH
-#define MESH_HH
+#pragma once
 
 #include <concepts>
 #include <glm/glm.hpp>
 #include <type_traits>
 #include <vector>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 struct MeshVertex {
     glm::vec3 position;
@@ -54,6 +53,4 @@ class Mesh {
     const std::size_t get_index_count() const;
 };
 
-} // namespace plane_quest::render
-
-#endif
+} // namespace redseen::render

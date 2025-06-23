@@ -23,7 +23,7 @@
 #include "shader.hh"
 #include <glad/glad.h>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 MeshRenderer::MeshRenderer() {
     // Create and compile the mesh shader from external header
@@ -74,4 +74,4 @@ void MeshRenderer::render(const OpenGLMeshHandle &mesh,
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

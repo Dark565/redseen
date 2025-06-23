@@ -21,7 +21,7 @@
 #include "engine/renderer.hh"
 #include "engine/renderers/opengl_renderer.hh"
 
-namespace plane_quest::engine::model {
+namespace redseen::engine::model {
 OpenGLModel::OpenGLModel(std::shared_ptr<render::Model> model) : model(model) {}
 
 bool OpenGLModel::render(Renderer &renderer, const RenderRequest &req,
@@ -34,4 +34,4 @@ bool OpenGLModel::render(Renderer &renderer, const RenderRequest &req,
     return ogl_renderer->render(*model, view * req.transform, req.lightPos);
 }
 
-} // namespace plane_quest::engine::model
+} // namespace redseen::engine::model

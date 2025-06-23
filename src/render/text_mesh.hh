@@ -17,8 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_MESH_HH
-#define TEXT_MESH_HH
+#pragma once
 
 #include "font.hh"
 #include "mesh.hh"
@@ -26,7 +25,7 @@
 #include <memory>
 #include <string>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 // TODO: Integrate it with engine's MeshFactory
 class TextMeshFactory {
@@ -38,6 +37,4 @@ class TextMeshFactory {
                                      float scale = 1.0f);
 };
 
-} // namespace plane_quest::render
-
-#endif
+} // namespace redseen::render

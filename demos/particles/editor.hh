@@ -24,12 +24,12 @@
 
 #include "engine/event_observer.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 class Engine;
 class Object;
-}; // namespace plane_quest::engine
+}; // namespace redseen::engine
 
-namespace plane_quest::demos::particles {
+namespace redseen::demos::particles {
 class Editor : engine::EventObserver {
     std::shared_ptr<engine::Engine> engine;
     std::unordered_set<std::shared_ptr<engine::Object>> objects;
@@ -42,4 +42,4 @@ class Editor : engine::EventObserver {
 
     friend class Engine;
 };
-} // namespace plane_quest::demos::particles
+} // namespace redseen::demos::particles

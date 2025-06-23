@@ -20,7 +20,7 @@
 #include "camera.hh"
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, float yaw,
                float pitch, float aspectRatio)
@@ -86,4 +86,4 @@ void Camera::updateCameraVectors() {
     updateView();
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

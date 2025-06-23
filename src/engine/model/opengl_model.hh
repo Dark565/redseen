@@ -25,11 +25,11 @@
 #include "engine/renderer.hh"
 #include "render/model.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 class Renderer;
 }
 
-namespace plane_quest::engine::model {
+namespace redseen::engine::model {
 class OpenGLModel : public Model {
     std::shared_ptr<render::Model> model;
 
@@ -39,4 +39,4 @@ class OpenGLModel : public Model {
     bool render(Renderer &, const RenderRequest &,
                 const glm::mat4 &view) const override;
 };
-} // namespace plane_quest::engine::model
+} // namespace redseen::engine::model

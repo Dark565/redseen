@@ -35,7 +35,7 @@
 #include "engine/renderer.hh"
 #include "render/model.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 BasicObject::BasicObject(const glm::mat4 &transform,
                          std::shared_ptr<const Model> model)
@@ -78,4 +78,4 @@ bool BasicObject::render(Engine &engine, const glm::vec3 &lightPos) {
         {*get_model(), get_transform(), lightPos});
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

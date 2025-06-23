@@ -23,7 +23,7 @@
 #include "texture.hh"
 #include <GLFW/glfw3.h>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class OpenGLDrawer : public Drawer {
   public:
@@ -48,4 +48,4 @@ class OpenGLDrawer : public Drawer {
     unsigned int m_screenQuadVbo = 0;
 };
 
-} // namespace plane_quest::render
+} // namespace redseen::render

@@ -39,7 +39,7 @@
 #include "config.hh"
 #include "bullet.hh"
 
-namespace plane_quest::demos::particles {
+namespace redseen::demos::particles {
 
 class TestWindowObserver : public engine::EventObserver {
   public:
@@ -139,10 +139,10 @@ class TestWindowObserver : public engine::EventObserver {
     std::unique_ptr<std::uniform_real_distribution<float>> vel_dist;
 };
 
-} // namespace plane_quest::demos::particles
+} // namespace redseen::demos::particles
 
 int main() {
-    using namespace plane_quest;
+    using namespace redseen;
 
     auto engine = engine::Engine::create();
 

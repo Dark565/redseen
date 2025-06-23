@@ -23,7 +23,7 @@
 
 #include "object.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Model;
 class Engine;
@@ -50,4 +50,4 @@ class BasicObject : public Object {
     bool render(Engine &, const glm::vec3 &lightPos) override;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

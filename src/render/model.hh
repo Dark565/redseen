@@ -23,7 +23,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Shader;
 class OpenGLMeshHandle;
@@ -63,4 +63,4 @@ class Model {
     glm::mat4 transform_;
 };
 
-} // namespace plane_quest::render
+} // namespace redseen::render

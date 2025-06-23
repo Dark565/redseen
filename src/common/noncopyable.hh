@@ -19,7 +19,7 @@
 
 #pragma once
 
-namespace plane_quest {
+namespace redseen {
 
 /** A mixin that makes a derived class non-copyable (but movable). */
 struct NonCopyable {
@@ -33,4 +33,4 @@ struct NonCopyable {
     NonCopyable() = default;
 };
 
-} // namespace plane_quest
+} // namespace redseen

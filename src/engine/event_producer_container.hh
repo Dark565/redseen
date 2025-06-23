@@ -26,7 +26,7 @@
 #include "event_producer_container.hh"
 #include "event_producer.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 /** A class for event producers */
 class EventProducerContainer {
     std::unordered_map<std::string, std::shared_ptr<EventProducer>> producers;
@@ -39,4 +39,4 @@ class EventProducerContainer {
     bool remove_producer(const std::string_view &name);
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

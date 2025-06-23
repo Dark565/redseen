@@ -21,7 +21,7 @@
 
 #include "mesh.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Mesh;
 
@@ -58,4 +58,4 @@ class OpenGLMeshHandle {
     static std::unique_ptr<OpenGLMeshHandle> create_from_mesh(const Mesh &mesh);
 };
 
-}; // namespace plane_quest::render
+}; // namespace redseen::render

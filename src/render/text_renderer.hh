@@ -17,8 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_RENDERER_HH
-#define TEXT_RENDERER_HH
+#pragma once
 
 #include "shader.hh"
 #include "font.hh"
@@ -26,7 +25,7 @@
 #include <memory>
 #include <string>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Text;
 
@@ -55,6 +54,4 @@ class TextRenderer {
     friend class Text;
 };
 
-} // namespace plane_quest::render
-
-#endif
+} // namespace redseen::render

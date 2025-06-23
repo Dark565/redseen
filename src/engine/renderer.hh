@@ -26,10 +26,10 @@
 
 #include "event_observer.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 class OpenGLDrawer;
 }
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Model;
 class Engine;
@@ -79,4 +79,4 @@ class Renderer : public EventObserver {
     friend class Engine;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

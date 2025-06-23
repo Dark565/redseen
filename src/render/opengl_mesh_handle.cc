@@ -23,7 +23,7 @@
 
 #include "mesh.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 OpenGLMeshHandle::OpenGLMeshHandle() {
     glGenVertexArrays(1, &VAO);
@@ -105,4 +105,4 @@ OpenGLMeshHandle::create_from_mesh(const Mesh &mesh) {
     return handle;
 }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

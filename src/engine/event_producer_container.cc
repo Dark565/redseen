@@ -20,7 +20,7 @@
 #include "event_producer_container.hh"
 #include "event_dispatcher.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 std::size_t EventProducerContainer::feed_dispatcher(EventDispatcher &dispatcher,
                                                     bool can_block) {
@@ -40,4 +40,4 @@ bool EventProducerContainer::remove_producer(const std::string_view &name) {
     return producers.erase(std::string(name));
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

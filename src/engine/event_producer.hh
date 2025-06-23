@@ -21,7 +21,7 @@
 
 #include <chrono>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class EventDispatcher;
 
@@ -31,4 +31,4 @@ class EventProducer {
     virtual std::size_t feed_dispatcher(EventDispatcher &, bool can_block) = 0;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

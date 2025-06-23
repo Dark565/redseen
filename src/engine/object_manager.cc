@@ -30,7 +30,7 @@
 
 #include <string_view>
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 ObjectManager::ObjectManager(const std::shared_ptr<Engine> &engine)
     : engine(engine) {}
@@ -86,4 +86,4 @@ void ObjectManager::subscribe_dispatcher(std::weak_ptr<ObjectManager> _this,
 #endif
 }
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

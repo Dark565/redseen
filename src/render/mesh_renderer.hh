@@ -17,8 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MESH_RENDERER_HH
-#define MESH_RENDERER_HH
+#pragma once
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -26,7 +25,7 @@
 #include "render/opengl_mesh_handle.hh"
 #include "shader.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class MeshRenderer {
   public:
@@ -41,6 +40,4 @@ class MeshRenderer {
     std::unique_ptr<Shader> shader;
 };
 
-} // namespace plane_quest::render
-
-#endif
+} // namespace redseen::render

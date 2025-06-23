@@ -19,7 +19,7 @@
 
 #pragma once
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 class Texture {
   public:
@@ -43,4 +43,4 @@ class Texture {
     bool m_ownsTexture = true;
 };
 
-} // namespace plane_quest::render
+} // namespace redseen::render

@@ -32,7 +32,7 @@
 #include "renderer.hh"
 #include "camera.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 enum class PipelinePriority : std::size_t {
     ENGINE = 0,
@@ -139,4 +139,4 @@ class Engine : NonCopyable,
     std::size_t feed_dispatcher(EventDispatcher &, bool can_block) override;
 };
 
-} // namespace plane_quest::engine
+} // namespace redseen::engine

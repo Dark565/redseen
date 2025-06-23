@@ -24,16 +24,16 @@
 #include "engine/object/object.hh"
 #include "engine/object/basic_object.hh"
 
-namespace plane_quest::render {
+namespace redseen::render {
 class Model;
 }
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 class Engine;
 class Model;
-} // namespace plane_quest::engine
+} // namespace redseen::engine
 
-namespace plane_quest::demos::particles {
+namespace redseen::demos::particles {
 
 class Bullet : public engine::BasicObject {
     glm::vec3 start_pos;
@@ -55,4 +55,4 @@ class Bullet : public engine::BasicObject {
     engine::ObjectUpdateResult update(engine::Engine &) override;
 };
 
-} // namespace plane_quest::demos::particles
+} // namespace redseen::demos::particles

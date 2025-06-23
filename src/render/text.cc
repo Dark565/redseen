@@ -22,7 +22,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 Text::Text(TextRenderer *renderer, const std::shared_ptr<Font> &font)
     : renderer(renderer), font(font) {}
@@ -85,4 +85,4 @@ void Text::render(const std::string &text, float x, float y, float scale,
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

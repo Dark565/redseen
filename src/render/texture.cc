@@ -21,7 +21,7 @@
 
 #include <glad/glad.h>
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 Texture::Texture(const unsigned char *data, int width, int height)
     : m_width(width), m_height(height), m_ownsTexture(true) {
@@ -48,4 +48,4 @@ void Texture::bind() const { glBindTexture(GL_TEXTURE_2D, m_textureId); }
 
 void Texture::unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
 
-} // namespace plane_quest::render
+} // namespace redseen::render

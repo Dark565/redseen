@@ -32,11 +32,11 @@
 
 struct GLFWwindow;
 
-namespace plane_quest::render {
+namespace redseen::render {
 class Drawer;
 }
 
-namespace plane_quest::ui {
+namespace redseen::ui {
 
 class WindowEventLoop;
 
@@ -71,4 +71,4 @@ class Window : public engine::EventProducer,
     std::unique_ptr<WindowImpl> impl; // Use unique_ptr for PIMPL
 };
 
-} // namespace plane_quest::ui
+} // namespace redseen::ui

@@ -17,10 +17,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHADER_HH
-#define SHADER_HH
+#pragma once
 
 #include <string>
+
+namespace redseen::render {
 
 class Shader {
   public:
@@ -40,4 +41,4 @@ class Shader {
     void compileAndLink(const char *vertexCode, const char *fragmentCode);
 };
 
-#endif
+} // namespace redseen::render

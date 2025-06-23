@@ -19,7 +19,7 @@
 
 #pragma once
 
-namespace plane_quest::render {
+namespace redseen::render {
 
 constexpr const char *MESH_VERTEX_SHADER = R"(
 #version 330 core
@@ -133,4 +133,4 @@ void main() {
 
 #endif
 
-} // namespace plane_quest::render
+} // namespace redseen::render

@@ -24,7 +24,7 @@
 
 #include "engine/geometry.hh"
 
-namespace plane_quest::engine {
+namespace redseen::engine {
 
 class Engine;
 
@@ -51,4 +51,4 @@ class Object {
 
     friend class ObjectManager;
 };
-} // namespace plane_quest::engine
+} // namespace redseen::engine
