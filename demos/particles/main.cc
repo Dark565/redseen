@@ -17,12 +17,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* --------------
+ * This is a demo showing particles made up of spherical mesh.
+ * Move with W,S,A,D, rotate camera with arrows, create particles with C and
+ * quit window with Q
+ * --------------
+ */
+
 #include <GLFW/glfw3.h>
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include <random>
+#include <iostream>
 
 #include "engine/engine.hh"
 #include "engine/camera.hh"
@@ -184,6 +192,11 @@ int main() {
         demos::particles::PRIORITY_CLASS, 0, observer);
 
     engine->get_event_producer_container()->add_producer("window", window);
+
+    std::cout << "This is a demo showing particles made up of spherical mesh."
+              << std::endl;
+    std::cout << "Move with W,S,A,D, rotate camera with arrows," << std::endl;
+    std::cout << "create particles with C and quit window with Q." << std::endl;
 
     engine->run();
     window->hide();
