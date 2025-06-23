@@ -1,4 +1,3 @@
-
 file(GLOB_RECURSE ENGINE_SOURCES "**/*.cc")
 file(GLOB_RECURSE ENGINE_HEADERS "**/*.hh")
 
