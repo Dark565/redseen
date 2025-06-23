@@ -1,12 +1,12 @@
 #include "opengl_renderer.hh"
 
 #include "engine/engine.hh"
-#include "engine/event_observer.hh"
-#include "engine/event.hh"
 #include "engine/renderer.hh"
 #include "render/opengl_drawer.hh"
 #include "render/mesh_renderer.hh"
 #include "render/model.hh"
+
+#include <glad/glad.h>
 
 namespace plane_quest::engine::renderers {
 

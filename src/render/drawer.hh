@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h> // Include OpenGL types like GLuint
-
 namespace plane_quest::render {
 
 class Drawer {

@@ -1,5 +1,7 @@
 #include "texture.hh"
 
+#include <glad/glad.h>
+
 namespace plane_quest::render {
 
 Texture::Texture(const unsigned char *data, int width, int height)

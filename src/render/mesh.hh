@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 #include <type_traits>
 #include <vector>
-#include <glad/glad.h>
 
 namespace plane_quest::render {
 

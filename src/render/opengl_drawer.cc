@@ -1,6 +1,9 @@
+#include <stdexcept>
+
+#include <glad/glad.h>
+
 #include "opengl_drawer.hh"
 #include "texture.hh"
-#include <stdexcept>
 
 namespace plane_quest::render {
 

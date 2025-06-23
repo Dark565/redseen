@@ -2,7 +2,6 @@
 #define SHADER_HH
 
 #include <string>
-#include <glad/glad.h>
 
 class Shader {
   public:
@@ -14,11 +13,11 @@ class Shader {
            bool isSourceCode);
 
     void use() const;
-    GLuint ID;
+    unsigned int ID;
 
   private:
     std::string readFile(const std::string &filePath) const;
-    void checkCompileErrors(GLuint shader, const std::string &type) const;
+    void checkCompileErrors(unsigned int shader, const std::string &type) const;
     void compileAndLink(const char *vertexCode, const char *fragmentCode);
 };
 

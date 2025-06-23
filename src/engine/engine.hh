@@ -7,7 +7,6 @@
 #include "common/noncopyable.hh"
 #include "engine/event_observer.hh"
 #include "engine/event_producer_container.hh"
-#include "render/mesh_renderer.hh"
 #include "texture_manager.hh"
 #include "object_manager.hh"
 #include "event_dispatcher.hh"
