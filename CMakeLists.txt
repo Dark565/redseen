@@ -12,10 +12,10 @@ find_package(SQLite3 REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(glm REQUIRED)
 
-set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/include")
-file(GLOB_RECURSE GLOB_INCLUDES "${CMAKE_SOURCE_DIR}/lib/include/**/*.h")
+set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/glad/include")
+file(GLOB_RECURSE GLOB_INCLUDES "${CMAKE_SOURCE_DIR}/glad/lib/include/**/*.h")
 
-file(GLOB_RECURSE GLAD_SOURCE "${CMAKE_SOURCE_DIR}/lib/src/glad.c")
+set(GLAD_SOURCE "${CMAKE_SOURCE_DIR}/lib/glad/src/glad.c")
 add_library(glad STATIC ${GLAD_SOURCE} ${GLAD_INCLUDES})
 target_include_directories(glad PUBLIC "${GLAD_INCLUDE_DIR}")
 
