@@ -38,5 +38,5 @@ See CONTRIBUTING.md if you're interested.
 
 ## Copyright
 
-RedSeen is licensed under the Lesser General Purpose License v3 (LGPLv3). See LICENSE.  
+RedSeen is licensed under the GNU Lesser General Public License v3 (LGPLv3). See LICENSE.  
 For the list of contributors, see CONTRIBUTORS.md.
